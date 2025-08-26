@@ -3,7 +3,6 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// dashboard login required
 Route::get('/', function () {
     return view('dashboard');
 })->middleware(['auth']);
