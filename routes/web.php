@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::assertRedirect('/', '/dashboard');
+Route::redirect('/', '/dashboard');
 
 // Dashboard
 Route::get('/dashboard', fn () => view('dashboard'))
