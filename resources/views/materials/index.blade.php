@@ -18,7 +18,15 @@
                 <div class="py-3 px-3">
                     <div class="font-medium text-gray-100">{{ $m->name }}</div>
                     <div class="text-sm text-gray-400">
-                        {{ $m->category ?? '—' }} · {{ $m->botanical ?? '—' }}
+                        @if ($m->category)
+                            {{ $m->category }}
+                        @endif
+                        @if ($m->category && $m->botanical)
+                            ·
+                        @endif
+                        @if ($m->botanical)
+                            {{ $m->botanical }}
+                        @endif
                     </div>
                 </div>
             @empty

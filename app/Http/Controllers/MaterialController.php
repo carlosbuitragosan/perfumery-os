@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Material;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class MaterialController extends Controller
 {
@@ -23,11 +24,21 @@ class MaterialController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('materials', 'name'),
+            ],
             'category' => 'nullable|string|max:100',
             'botanical' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
-        ]);
+        ], ['name.unique' => 'A material with this name already exists.']);
+
+        $data['name'] = trim($data['name']);
+        if (! empty($data['botanical'])) {
+            $data['botanical'] = trim($data['botanical']);
+        }
 
         Material::create($data);
 
