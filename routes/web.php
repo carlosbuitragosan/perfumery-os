@@ -21,6 +21,9 @@ Route::middleware('auth')->group(function () {
     // Materials (temp)
     Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
     Route::get('/materials/create', [MaterialController::class, 'create'])->name('materials.create');
+    Route::get('materials/{material}/edit', [MaterialController::class, 'edit'])->name('materials.edit');
+    Route::patch('/materials/{material}', [MaterialController::class, 'update'])->name('materials.update');
+    Route::put('/materials/{material}', [MaterialController::class, 'update']);
     Route::post('/materials', [MaterialController::class, 'store'])->name('materials.store');
 });
 

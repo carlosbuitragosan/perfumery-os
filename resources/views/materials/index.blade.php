@@ -15,7 +15,8 @@
 
         <div class="divide-y divide-gray-800 card">
             @forelse($materials as $m)
-                <div class="py-3 px-3">
+                <a href="{{ route('materials.edit', $m) }}"
+                    class="block px-3 py-3 hover:bg-gray-800 focus:bg-gray-800 focus:outline-none">
                     <div class="font-medium text-gray-100">{{ $m->name }}</div>
                     <div class="text-sm text-gray-400">
                         @if ($m->category)
@@ -28,7 +29,7 @@
                             {{ $m->botanical }}
                         @endif
                     </div>
-                </div>
+                </a>
             @empty
                 <div class="p-3 text-gray-400">No materials yet.</div>
             @endforelse
