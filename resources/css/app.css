@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='search'],
+  textarea,
+  select {
+    @apply bg-gray-900 border border-gray-700 text-gray-100 placeholder-gray-400 rounded-md;
+  }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply ring-2 ring-indigo-500 border-indigo-500 outline-none;
+  }
+
+  /* Cards/containers */
+  .card {
+    @apply bg-gray-900/70 border border-gray-800 rounded-lg;
+  }
+}

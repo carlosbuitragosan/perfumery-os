@@ -7,7 +7,7 @@
             @csrf
             <label class="block">
                 <span class="text-sm">Name *</span>
-                <input name="name" required class="border rounded p-2 w-full" value="{{ old('name') }}">
+                <input type="text" name="name" required class="p-2 w-full" value="{{ old('name') }}">
                 @error('name')
                     <div class="text-red-600 text-small">{{ $message }}</div>
                 @enderror
@@ -15,17 +15,17 @@
 
             <label class="block">
                 <span class="text-sm">Category (EO/Absolute/Tincture...)</span>
-                <input name="category" class="border rounded p-2 w-full" value="{{ old('category') }}">
+                <input type="text" name="category" class="p-2 w-full" value="{{ old('category') }}">
             </label>
 
             <label class="block">
                 <span class="text-sm">Botanical (Latin name)</span>
-                <input name="botanical" class="border rounded p-2 w-full" value="{{ old('botanical') }}">
+                <input type="text" name="botanical" class="p-2 w-full" value="{{ old('botanical') }}">
             </label>
 
             <label class="block">
                 <span class="text-sm">Notes</span>
-                <textarea name="notes" rows="4" class="border rounded p-2 w-full">{{ old('notes') }}</textarea>
+                <textarea name="notes" rows="4" class="p-2 w-full">{{ old('notes') }}</textarea>
 
             </label>
 
