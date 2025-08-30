@@ -18,6 +18,7 @@ function materialPayload(array $overrides = []): array
         'category' => 'EO',
         'botanical' => 'Lavandula Angustifolia',
         'notes' => 'test',
+        'pyramid' => ['top', 'heart'],
     ], $overrides);
 }
 
@@ -154,4 +155,20 @@ it('updates pyramid values for a material', function () {
         'id' => $material->id,
         'pyramid' => json_encode(['top', 'heart']),
     ]);
+});
+
+it('shows and pre-checks pyramid values on the edit form', function () {
+    $material = makeMaterial();
+
+    $this->actingAs($this->user)
+        ->get(route('materials.edit', $material))
+        ->assertOk()
+        ->assertSee('Pyramid')
+        ->assertSee('name="pyramid[]"', false)
+        ->assertSee('value="top"', false)
+        ->assertSee('value="heart"', false)
+        ->assertSee('value="base"', false)
+        ->assertSeeInOrder(['value="top"', 'checked'], false)
+        ->assertSeeInOrder(['value="heart"', 'checked'], false)
+        ->assertDontSee('value="base" checked', false);
 });

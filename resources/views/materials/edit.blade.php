@@ -28,6 +28,36 @@
                 <input type="text" name="botanical" class="p-2 w-full"
                     value="{{ old('botanical', $material->botanical) }}">
             </label>
+            @php
+                $currentPyramid = collect(old('pyramid', $material->pyramid ?? []));
+            @endphp
+            <div class="space-y-2">
+                <span class="text-sm font-medium">Pyramid</span>
+                <div class="flex flex-wrap gap-3">
+                    <label class="inline-flex items-center gap-2">
+                        <input class="rounded" type="checkbox" name="pyramid[]" value="top"
+                            @checked($currentPyramid->contains('top'))>
+                        <span class="text-sm">TOP</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2">
+                        <input class="rounded" type="checkbox" name="pyramid[]" value="heart"
+                            @checked($currentPyramid->contains('heart'))>
+                        <span class="text-sm">HEART</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2">
+                        <input class="rounded" type="checkbox" name="pyramid[]" value="base"
+                            @checked($currentPyramid->contains('base'))>
+                        <span class="text-sm">BASE</span>
+                    </label>
+                </div>
+            </div>
+
+            @error('pyramid')
+                <div class="text-red-500 text-sm">{{ message }}</div>
+            @enderror
+            @error('pyramid.*')
+                <div class="text-red-500 text-sm">{{ message }}</div>
+            @enderror
 
             <label class="block">
                 <span class="text-sm">Notes</span>
