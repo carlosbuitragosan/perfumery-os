@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Material;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 
@@ -14,7 +15,7 @@ it('has the materials table with the expected columns', function () {
 });
 
 it('can create a material with the minimal fields', function () {
-    $material = \App\Models\Material::create([
+    $material = Material::create([
         'name' => 'Lavender',
         'category' => 'EO',
         'botanical' => 'Lavandula Angustifolia',

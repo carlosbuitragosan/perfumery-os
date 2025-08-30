@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
 {
-    protected $fillable = ['name', 'category', 'botanical', 'notes'];
+    protected $fillable = ['name', 'category', 'botanical', 'notes', 'pyramid'];
+
+    protected $casts = [
+        'pyramid' => 'array',
+    ];
 }

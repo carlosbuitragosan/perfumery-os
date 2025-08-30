@@ -112,3 +112,30 @@ it('updates a material and redirects', function () {
         'notes' => 'test',
     ]);
 });
+
+it('saves pyramid tiers for a material', function () {
+    $this->actingAs($this->user)
+        ->post('/materials', materialPayload([
+            'name' => 'Bergamot',
+            'pyramid' => ['top'],
+        ]))
+        ->assertRedirect('/materials');
+
+    $this->assertDatabaseHas('materials', [
+        'name' => 'Bergamot',
+    ]);
+
+    $material = Material::where('name', 'Bergamot')->first();
+    expect($material->pyramid)->toBe(['top']);
+});
+
+it('shows pyramid tier inputs on the create form', function () {
+    $this->actingAs($this->user)
+        ->get('/materials/create')
+        ->assertOk()
+        ->assertSee('Pyramid')
+        ->assertSee('name="pyramid[]"', false)
+        ->assertSee('value="top"', false)
+        ->assertSee('value="heart"', false)
+        ->assertSee('value="base"', false);
+});

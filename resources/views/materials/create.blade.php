@@ -23,6 +23,34 @@
                 <input type="text" name="botanical" class="p-2 w-full" value="{{ old('botanical') }}">
             </label>
 
+            <div class="space-y-2">
+                <span class="text-sm font-medium">Pyramid</span>
+                <div class="flex flex-wrap gap-3">
+                    <label class="inline-flex items-center gap-2">
+                        <input class="rounded" type="checkbox" name="pyramid[]" value="top"
+                            @checked(collect(old('pyramid', []))->contains('top'))>
+                        <span class="text-sm">TOP</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2">
+                        <input class="rounded" type="checkbox" name="pyramid[]" value="heart"
+                            @checked(collect(old('pyramid', []))->contains('heart'))>
+                        <span class="text-sm">HEART</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2">
+                        <input class="rounded" type="checkbox" name="pyramid[]" value="base"
+                            @checked(collect(old('pyramid', []))->contains('base'))>
+                        <span class="text-sm">BASE</span>
+                    </label>
+                </div>
+            </div>
+
+            @error('pyramid')
+                <div class="text-red-500 text-sm">{{ message }}</div>
+            @enderror
+            @error('pyramid.*')
+                <div class="text-red-500 text-sm">{{ message }}</div>
+            @enderror
+
             <label class="block">
                 <span class="text-sm">Notes</span>
                 <textarea name="notes" rows="4" class="p-2 w-full">{{ old('notes') }}</textarea>
@@ -30,8 +58,9 @@
             </label>
 
             <div class="flex gap-2">
-                <x-primary-button type="submit">SAVE</x-primary-button>
-                <a href="{{ route('materials.index') }}" class="px-4 py-2 border rounded">CANCEL</a>
+                <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">SAVE</x-primary-button>
+                <a href="{{ route('materials.index') }}"
+                    class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-sm font-semibold">CANCEL</a>
             </div>
         </form>
     </div>
