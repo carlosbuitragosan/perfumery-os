@@ -139,3 +139,19 @@ it('shows pyramid tier inputs on the create form', function () {
         ->assertSee('value="heart"', false)
         ->assertSee('value="base"', false);
 });
+
+it('updates pyramid values for a material', function () {
+    $material = makeMaterial();
+
+    $this->actingAs($this->user)
+        ->patch(route('materials.update', $material), materialPayload([
+            'name' => 'Lavender',
+            'pyramid' => ['top', 'heart'],
+        ]))
+        ->assertRedirect('/materials');
+
+    $this->assertDatabaseHas('materials', [
+        'id' => $material->id,
+        'pyramid' => json_encode(['top', 'heart']),
+    ]);
+});

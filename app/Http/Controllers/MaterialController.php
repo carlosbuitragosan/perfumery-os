@@ -34,7 +34,7 @@ class MaterialController extends Controller
             'botanical' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'pyramyd' => 'nullable|array',
-            'pyramid.*' => ['in:top, heart, base'],
+            'pyramid.*' => ['in:top,heart,base'],
         ], ['name.unique' => 'A material with this name already exists.']);
 
         $data['name'] = trim($data['name']);
@@ -59,6 +59,8 @@ class MaterialController extends Controller
             'category' => ['nullable', 'string', 'max:100'],
             'botanical' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
+            'pyramid' => ['nullable', 'array'],
+            'pyramid.*' => ['in:top,heart,base'],
         ]);
 
         $data['name'] = trim($data['name']);
