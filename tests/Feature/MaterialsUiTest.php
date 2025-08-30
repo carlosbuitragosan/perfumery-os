@@ -192,3 +192,44 @@ it('creates a material with allowed taxonomy tags and IFRA percent', function ()
     expect($material->effects)->toContain('uplifting');
     expect($material->ifra_max_pct)->toBeFloat()->toBe(1.0);
 });
+
+it('shows taxonomy fields on the create material form', function () {
+    $this->actingAs($this->user)
+        ->get('/materials/create')
+        ->assertOk()
+
+    // Families"
+        ->assertSee('name="families[]"', false)
+        ->assertSee('value="citrus"', false)
+        ->assertSee('value="floral"', false)
+        ->assertSee('value="herbal"', false)
+        ->assertSee('value="woody"', false)
+        ->assertSee('value="resinous"', false)
+
+    // Functions
+        ->assertSee('name="functions[]"', false)
+        ->assertSee('value="fixative"', false)
+        ->assertSee('value="modifier"', false)
+        ->assertSee('value="blender"', false)
+
+    // Safety
+        ->assertSee('name="safety[]"', false)
+        ->assertSee('value="photosensitizing"', false)
+        ->assertSee('value="irritant"', false)
+        ->assertSee('value="allergenic"', false)
+        ->assertSee('value="sensitizer"', false)
+
+    // Effects
+        ->assertSee('name="effects[]"', false)
+        ->assertSee('value="calming"', false)
+        ->assertSee('value="uplifting"', false)
+        ->assertSee('value="grounding"', false)
+        ->assertSee('value="sedative"', false)
+        ->assertSee('value="aphrodisiac"', false)
+        ->assertSee('value="stimulating"', false)
+        ->assertSee('value="balancing"', false)
+
+    // IFRA max %
+        ->assertSee('name="ifra_max_pct"', false)
+        ->assertSee('type="number"', false);
+});
