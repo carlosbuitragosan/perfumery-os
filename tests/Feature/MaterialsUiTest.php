@@ -4,48 +4,55 @@ use App\Models\Material;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
+uses(RefreshDatabase::class)->in('Feature');
+
+beforeEach(function () {
+    $this->user = User::Factory()->create();
+});
+
+// Default payload for creating/updating a material
+function materialPayload(array $overrides = []): array
+{
+    return array_merge([
+        'name' => 'Lavender',
+        'category' => 'EO',
+        'botanical' => 'Lavandula Angustifolia',
+        'notes' => 'test',
+    ], $overrides);
+}
+
+// Persist a material quickly
+function makeMaterial(array $overrides = []): material
+{
+    return Material::create(materialPayload($overrides));
+}
 
 it('redirect guests to login on /materials', function () {
     $this->get('/materials')->assertRedirect('/login');
 });
 
 it('validates and creates a material via POST', function () {
-    $user = User::factory()->create();
-
     // Missing name -> validation error
-    $this->actingAs($user)
-        ->post('/materials', [
-            'name' => '',
-            'category' => 'EO',
-            'botanical' => 'Lavandula Angustifolia',
-            'notes' => 'Test',
-        ])
+    $this->actingAs($this->user)
+        ->post('/materials', materialPayload(['name' => '']))
         ->assertSessionHasErrors(['name']);
 
     // Valid create ->  redirect + persisted
-    $this->actingAs($user)
-        ->post('/materials', [
+    $this->actingAs($this->user)
+        ->post('/materials', materialPayload([
             'name' => 'Peppermint',
             'category' => 'EO',
             'botanical' => 'Mentha piperita',
             'notes' => 'Fresh',
-        ])
+        ]))
         ->assertRedirect('/materials');
 
     $this->assertDatabaseHas('materials', ['name' => 'Peppermint']);
 });
 
 it('persists botanical when provided', function () {
-    $user = User::factory()->create();
-
-    $this->actingAs($user)
-        ->post('/materials', [
-            'name' => 'Lavender',
-            'category' => 'EO',
-            'botanical' => 'Lavandula Angustifolia',
-            'notes' => 'test',
-        ])
+    $this->actingAs($this->user)
+        ->post('/materials', materialPayload())
         ->assertRedirect('/materials');
 
     $this->assertDatabaseHas('materials', [
@@ -55,34 +62,23 @@ it('persists botanical when provided', function () {
 });
 
 it('rejects duplicate material names (case-insensitive)', function () {
-    $user = User::factory()->create();
+    makeMaterial(); // seeds Lavender
 
-    // save an existing record
-    Material::create([
-        'name' => 'Lavender',
-        'category' => 'EO',
-        'botanical' => 'Lavandula Angustifolia',
-    ]);
+    expect(Material::count())->toBe(1);
 
-    $this->actingAs($user)
-        ->post('/materials', [
+    $this->actingAs($this->user)
+        ->post('/materials', materialPayload([
             'name' => 'Lavender',
-            'category' => 'EO',
-        ])
+        ]))
         ->assertSessionHasErrors(['name']);
 
     expect(Material::whereRaw('LOWER(name) = ?', ['lavender'])->count())->toBe(1);
 });
 
 it('shows the edit form for a material', function () {
-    $user = User::factory()->create();
-    $material = Material::create([
-        'name' => 'Lavender',
-        'category' => 'EO',
-        'botanical' => 'Lavandula Angustifolia',
-    ]);
+    $material = makeMaterial();
 
-    $this->actingAs($user)
+    $this->actingAs($this->user)
         ->get(route('materials.edit', $material))
         ->assertOk()
         ->assertSee('Edit Material')
@@ -91,35 +87,21 @@ it('shows the edit form for a material', function () {
 });
 
 it('links each material on the index to its edit page', function () {
-    $user = User::factory()->create();
+    $material = makeMaterial();
 
-    $material = Material::create([
-        'name' => 'Lavender',
-        'category' => 'EO',
-        'botanical' => 'Lavandula Angustifolia',
-    ]);
-
-    $this->actingAs($user)
+    $this->actingAs($this->user)
         ->get('/materials')
         ->assertSee(e(route('materials.edit', $material)));
 });
 
 it('updates a material and redirects', function () {
-    $user = User::factory()->create();
+    $material = makeMaterial();
 
-    $material = Material::create([
-        'name' => 'Lavender',
-        'category' => 'EO',
-        'botanical' => 'Lavandula Angustifolia',
-    ]);
-
-    $this->actingAs($user)
-        ->patch(route('materials.update', $material), [
+    $this->actingAs($this->user)
+        ->patch(route('materials.update', $material), materialPayload([
             'name' => 'Lavendola',
             'category' => 'EO',
-            'botanical' => 'Lavandula Angustifolia',
-            'notes' => 'updated',
-        ])
+        ]))
         ->assertRedirect('/materials');
 
     $this->assertDatabaseHas('materials', [
@@ -127,6 +109,6 @@ it('updates a material and redirects', function () {
         'name' => 'Lavendola',
         'category' => 'EO',
         'botanical' => 'Lavandula Angustifolia',
-        'notes' => 'updated',
+        'notes' => 'test',
     ]);
 });
