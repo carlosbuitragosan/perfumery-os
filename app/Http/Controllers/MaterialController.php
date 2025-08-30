@@ -8,6 +8,15 @@ use Illuminate\Validation\Rule;
 
 class MaterialController extends Controller
 {
+    // Allowed vocabularies
+    private array $familiesAllowed = ['citrus', 'floral', 'herbal', 'woody', 'resinous'];
+
+    private array $functionsAllowed = ['fixative', 'modifier', 'blender'];
+
+    private array $safetyAllowed = ['photosensitizing', 'irritant', 'allergenic', 'sensitizer'];
+
+    private array $effectsAllowed = ['calming', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulating', 'balancing'];
+
     // minimal index so redirect('/materials') works
     public function index()
     {
@@ -16,26 +25,49 @@ class MaterialController extends Controller
         return view('materials.index', compact('materials'));
     }
 
+    // Create form
     public function create()
     {
         return view('materials.create');
     }
 
+    // Shared validation
+    private function validateMaterials(Request $request, ?Material $material = null): array
+    {
+        $unique = Rule::unique('materials', 'name');
+        if ($material) {
+            $unique = $unique->ignore($material->id);
+        }
+
+        return $request->validate([
+            'name' => ['required', 'string', 'max:255', $unique],
+            'category' => ['nullable', 'string', 'max:100'],
+            'botanical' => ['nullable', 'string', 'max:255'],
+            'notes' => ['nullable', 'string'],
+
+            'pyramid' => ['nullable', 'array'],
+            'pyramid.*' => ['in:top,heart,base'],
+
+            'families' => ['nullable', 'array'],
+            'families.*' => [Rule::in($this->familiesAllowed)],
+
+            'functions' => ['nullable', 'array'],
+            'functions.*' => [Rule::in($this->functionsAllowed)],
+
+            'safety' => ['nullable', 'array'],
+            'safety.*' => [Rule::in($this->safetyAllowed)],
+
+            'effects' => ['nullable', 'array'],
+            'effects.*' => [Rule::in($this->effectsAllowed)],
+
+            'ifra_max_pct' => ['nullable', 'numeric', 'between:0,100'],
+        ]);
+    }
+
+    // Store
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('materials', 'name'),
-            ],
-            'category' => 'nullable|string|max:100',
-            'botanical' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
-            'pyramyd' => 'nullable|array',
-            'pyramid.*' => ['in:top,heart,base'],
-        ], ['name.unique' => 'A material with this name already exists.']);
+        $data = $this->validateMaterials($request);
 
         $data['name'] = trim($data['name']);
         if (! empty($data['botanical'])) {
@@ -47,21 +79,16 @@ class MaterialController extends Controller
         return redirect()->route('materials.index')->with('ok', 'Material added');
     }
 
+    // Edit form
     public function edit(Material $material)
     {
         return view('materials.edit', compact('material'));
     }
 
+    // Update
     public function update(Request $request, Material $material)
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255', Rule::unique('materials', 'name')->ignore($material->id)],
-            'category' => ['nullable', 'string', 'max:100'],
-            'botanical' => ['nullable', 'string', 'max:255'],
-            'notes' => ['nullable', 'string'],
-            'pyramid' => ['nullable', 'array'],
-            'pyramid.*' => ['in:top,heart,base'],
-        ]);
+        $data = $this->validateMaterials($request, $material);
 
         $data['name'] = trim($data['name']);
         if (! empty($data['botanical'])) {

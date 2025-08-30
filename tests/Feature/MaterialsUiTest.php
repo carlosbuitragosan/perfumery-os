@@ -172,3 +172,23 @@ it('shows and pre-checks pyramid values on the edit form', function () {
         ->assertSeeInOrder(['value="heart"', 'checked'], false)
         ->assertDontSee('value="base" checked', false);
 });
+
+it('creates a material with allowed taxonomy tags and IFRA percent', function () {
+    $this->actingAs($this->user)
+        ->post('/materials', materialPayload([
+            'families' => ['citrus'],
+            'functions' => ['modifier'],
+            'safety' => ['photosensitizing', 'irritant'],
+            'effects' => ['uplifting'],
+            'ifra_max_pct' => 1.0,
+        ]))
+        ->assertRedirect('/materials');
+
+    $material = Material::where('name', 'Lavender')->first();
+    expect($material)->not->toBeNull();
+    expect($material->families)->toContain('citrus');
+    expect($material->functions)->toContain('modifier');
+    expect($material->safety)->toContain('photosensitizing', 'irritant');
+    expect($material->effects)->toContain('uplifting');
+    expect($material->ifra_max_pct)->toBeFloat()->toBe(1.0);
+});
