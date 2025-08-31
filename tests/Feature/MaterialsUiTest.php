@@ -3,6 +3,7 @@
 use App\Models\Material;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\DomCrawler\Crawler;
 
 uses(RefreshDatabase::class)->in('Feature');
 
@@ -193,6 +194,33 @@ it('creates a material with allowed taxonomy tags and IFRA percent', function ()
     expect($material->ifra_max_pct)->toBeFloat()->toBe(1.0);
 });
 
+it('renders all taxonomy options on the create form', function () {
+    $material = Material::create(materialPayload());
+    $response = $this->actingAs($this->user)->get(route('materials.create', $material));
+    $response->assertOk();
+    $crawler = new Crawler($response->getContent());
+
+    $families = ['citrus', 'floral', 'herbal', 'woody', 'resinous'];
+    $functions = ['fixative', 'modifier', 'blender'];
+    $safety = ['photosensitizing', 'irritant', 'allergenic', 'sensitizer'];
+    $effects = ['calming', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulating', 'balancing'];
+
+    $assertInputs = function (array $expected, string $name) use ($crawler) {
+        expect($crawler->filter("input[name=\"{$name}\"]")->count())->toBe(count($expected));
+
+        foreach ($expected as $value) {
+            expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->count())->toBe(1, "Missing input[name=\"{$name}\"][value=\"{$value}\"]");
+        }
+    };
+
+    $assertInputs($families, 'families[]');
+    $assertInputs($functions, 'functions[]');
+    $assertInputs($safety, 'safety[]');
+    $assertInputs($effects, 'effects[]');
+
+    expect($crawler->filter('input[name="ifra_max_pct"][type="number"]')->count())->toBe(1);
+});
+
 it('shows taxonomy fields on the create material form', function () {
     $this->actingAs($this->user)
         ->get('/materials/create')
@@ -232,4 +260,71 @@ it('shows taxonomy fields on the create material form', function () {
     // IFRA max %
         ->assertSee('name="ifra_max_pct"', false)
         ->assertSee('type="number"', false);
+});
+
+it('shows and pre-checks taxonomy fields on the edit form', function () {
+    $material = Material::create(materialPayload([
+        'families' => ['citrus'],
+        'functions' => ['fixative'],
+        'safety' => ['sensitizer'],
+        'effects' => ['uplifting'],
+        'ifra_max_pct' => 1.0,
+    ]));
+
+    $this->actingAs($this->user)
+        ->get(route('materials.edit', $material))
+        ->assertOk()
+
+        // Fields exist
+        ->assertSee('name="families[]"', false)
+        ->assertSee('name="functions[]"', false)
+        ->assertSee('name="safety[]"', false)
+        ->assertSee('name="effects[]"', false)
+        ->assertSee('name="ifra_max_pct"', false);
+
+    $response = $this->actingAs($this->user)->get(route('materials.edit', $material));
+    $response->assertOk();
+    $html = $response->getContent();
+    $crawler = new Crawler($html);
+
+    // checked
+    expect($crawler->filter('input[name="families[]"][value="citrus"]')->attr('checked'))->not->toBeNull();
+    expect($crawler->filter('input[name="functions[]"][value="fixative"]')->attr('checked'))->not->toBeNull();
+    expect($crawler->filter('input[name="safety[]"][value="sensitizer"]')->attr('checked'))->not->toBeNull();
+    expect($crawler->filter('input[name="effects[]"][value="uplifting"]')->attr('checked'))->not->toBeNull();
+
+    // unchecked
+    expect($crawler->filter('input[name="families[]"][value="floral"]')->attr('checked'))->toBeNull();
+    expect($crawler->filter('input[name="safety[]"][value="irritant"]')->attr('checked'))->toBeNull();
+
+    // IFRA pre-filled value
+    $ifra = $crawler->filter('input[name="ifra_max_pct"]')->attr('value');
+    expect((float) $ifra)->toBe(1.0);
+});
+
+it('renders all taxonomy options on the edit form', function () {
+    $material = Material::create(materialPayload());
+    $response = $this->actingAs($this->user)->get(route('materials.edit', $material));
+    $response->assertOk();
+    $crawler = new Crawler($response->getContent());
+
+    $families = ['citrus', 'floral', 'herbal', 'woody', 'resinous'];
+    $functions = ['fixative', 'modifier', 'blender'];
+    $safety = ['photosensitizing', 'irritant', 'allergenic', 'sensitizer'];
+    $effects = ['calming', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulating', 'balancing'];
+
+    $assertInputs = function (array $expected, string $name) use ($crawler) {
+        expect($crawler->filter("input[name=\"{$name}\"]")->count())->toBe(count($expected));
+
+        foreach ($expected as $value) {
+            expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->count())->toBe(1, "Missing input[name=\"{$name}\"][value=\"{$value}\"]");
+        }
+    };
+
+    $assertInputs($families, 'families[]');
+    $assertInputs($functions, 'functions[]');
+    $assertInputs($safety, 'safety[]');
+    $assertInputs($effects, 'effects[]');
+
+    expect($crawler->filter('input[name="ifra_max_pct"][type="number"]')->count())->toBe(1);
 });

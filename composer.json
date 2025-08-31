@@ -21,7 +21,9 @@
         "pestphp/pest": "^3.8",
         "pestphp/pest-plugin-laravel": "^3.2",
         "pestphp/pest-plugin-watch": "^3.0",
-        "phpunit/phpunit": "^11.5.3"
+        "phpunit/phpunit": "^11.5.3",
+        "symfony/css-selector": "^7.3",
+        "symfony/dom-crawler": "^7.3"
     },
     "autoload": {
         "psr-4": {
