@@ -175,7 +175,7 @@ it('creates a material with allowed taxonomy tags and IFRA percent', function ()
         ->post('/materials', materialPayload([
             'families' => ['citrus'],
             'functions' => ['modifier'],
-            'safety' => ['photosensitizing', 'irritant'],
+            'safety' => ['phototoxic', 'irritant'],
             'effects' => ['uplifting'],
             'ifra_max_pct' => 1.0,
         ]))
@@ -185,7 +185,7 @@ it('creates a material with allowed taxonomy tags and IFRA percent', function ()
     expect($material)->not->toBeNull();
     expect($material->families)->toContain('citrus');
     expect($material->functions)->toContain('modifier');
-    expect($material->safety)->toContain('photosensitizing', 'irritant');
+    expect($material->safety)->toContain('phototoxic', 'irritant');
     expect($material->effects)->toContain('uplifting');
     expect($material->ifra_max_pct)->toBeFloat()->toBe(1.0);
 });
@@ -196,10 +196,10 @@ it('renders all taxonomy options on the create form', function () {
     $response->assertOk();
     $crawler = new Crawler($response->getContent());
 
-    $families = ['citrus', 'floral', 'herbal', 'woody', 'resinous'];
-    $functions = ['fixative', 'modifier', 'blender'];
-    $safety = ['photosensitizing', 'irritant', 'allergenic', 'sensitizer'];
-    $effects = ['calming', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulating', 'balancing'];
+    $families = config('materials.families');
+    $functions = config('materials.functions');
+    $safety = config('materials.safety');
+    $effects = config('materials.effects');
 
     $assertInputs = function (array $expected, string $name) use ($crawler) {
         expect($crawler->filter("input[name=\"{$name}\"]")->count())->toBe(count($expected));
@@ -234,11 +234,10 @@ it('shows taxonomy fields on the create material form', function () {
         ->assertSee('name="functions[]"', false)
         ->assertSee('value="fixative"', false)
         ->assertSee('value="modifier"', false)
-        ->assertSee('value="blender"', false)
 
     // Safety
         ->assertSee('name="safety[]"', false)
-        ->assertSee('value="photosensitizing"', false)
+        ->assertSee('value="phototoxic"', false)
         ->assertSee('value="irritant"', false)
         ->assertSee('value="allergenic"', false)
         ->assertSee('value="sensitizer"', false)
@@ -250,8 +249,7 @@ it('shows taxonomy fields on the create material form', function () {
         ->assertSee('value="grounding"', false)
         ->assertSee('value="sedative"', false)
         ->assertSee('value="aphrodisiac"', false)
-        ->assertSee('value="stimulating"', false)
-        ->assertSee('value="balancing"', false)
+        ->assertSee('value="stimulant"', false)
 
     // IFRA max %
         ->assertSee('name="ifra_max_pct"', false)
@@ -304,10 +302,10 @@ it('renders all taxonomy options on the edit form', function () {
     $response->assertOk();
     $crawler = new Crawler($response->getContent());
 
-    $families = ['citrus', 'floral', 'herbal', 'woody', 'resinous'];
-    $functions = ['fixative', 'modifier', 'blender'];
-    $safety = ['photosensitizing', 'irritant', 'allergenic', 'sensitizer'];
-    $effects = ['calming', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulating', 'balancing'];
+    $families = config('materials.families');
+    $functions = config('materials.functions');
+    $safety = config('materials.safety');
+    $effects = config('materials.effects');
 
     $assertInputs = function (array $expected, string $name) use ($crawler) {
         expect($crawler->filter("input[name=\"{$name}\"]")->count())->toBe(count($expected));

@@ -13,8 +13,6 @@
                 @enderror
             </label>
 
-
-
             <label class="block">
                 <span class="text-sm">Botanical (Latin name)</span>
                 <input type="text" name="botanical" class="p-2 w-full" value="{{ old('botanical') }}">
@@ -54,7 +52,7 @@
                 <div class="space-y-2">
                     <span class="text-sm">Families</span>
                     <div class="flex flex-wrap gap-3">
-                        @foreach (['citrus', 'floral', 'herbal', 'woody', 'resinous'] as $v)
+                        @foreach (config('materials.families') as $v)
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="families[]" value="{{ $v }}"
                                     @checked(collect(old('families', []))->contains($v))>
@@ -68,7 +66,7 @@
                 <div class="space-y-2">
                     <span class="text-sm">Functions</span>
                     <div class="flex flex-wrap gap-3">
-                        @foreach (['fixative', 'modifier', 'blender'] as $v)
+                        @foreach (config('materials.functions') as $v)
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="functions[]" value="{{ $v }}"
                                     @checked(collect(old('functions', []))->contains($v))>
@@ -82,7 +80,7 @@
                 <div class="space-y-2">
                     <span class="text-sm">Safety</span>
                     <div class="flex flex-wrap gap-3">
-                        @foreach (['photosensitizing', 'irritant', 'allergenic', 'sensitizer'] as $v)
+                        @foreach (config('materials.safety') as $v)
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="safety[]" value="{{ $v }}"
                                     @checked(collect(old('Safety', []))->contains($v))>
@@ -96,7 +94,7 @@
                 <div class="space-y-2">
                     <span class="text-sm">Effects</span>
                     <div class="flex flex-wrap gap-3">
-                        @foreach (['calming', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulating', 'balancing'] as $v)
+                        @foreach (config('materials.effects') as $v)
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="effects[]" value="{{ $v }}"
                                     @checked(collect(old('Effects', []))->contains($v))>

@@ -9,13 +9,21 @@ use Illuminate\Validation\Rule;
 class MaterialController extends Controller
 {
     // Allowed vocabularies
-    private array $familiesAllowed = ['citrus', 'floral', 'herbal', 'woody', 'resinous'];
+    private array $familiesAllowed;
 
-    private array $functionsAllowed = ['fixative', 'modifier', 'blender'];
+    private array $functionsAllowed;
 
-    private array $safetyAllowed = ['photosensitizing', 'irritant', 'allergenic', 'sensitizer'];
+    private array $safetyAllowed;
 
-    private array $effectsAllowed = ['calming', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulating', 'balancing'];
+    private array $effectsAllowed;
+
+    public function __construct()
+    {
+        $this->familiesAllowed = config('materials.families', []);
+        $this->functionsAllowed = config('materials.functions', []);
+        $this->safetyAllowed = config('materials.safety', []);
+        $this->effectsAllowed = config('materials.effects', []);
+    }
 
     // minimal index so redirect('/materials') works
     public function index()
@@ -41,7 +49,6 @@ class MaterialController extends Controller
 
         return $request->validate([
             'name' => ['required', 'string', 'max:255', $unique],
-            'category' => ['nullable', 'string', 'max:100'],
             'botanical' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
 
