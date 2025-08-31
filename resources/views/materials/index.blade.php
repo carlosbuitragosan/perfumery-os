@@ -17,17 +17,76 @@
             @forelse($materials as $m)
                 <a href="{{ route('materials.edit', $m) }}"
                     class="block px-3 py-3 hover:bg-gray-800 focus:bg-gray-800 focus:outline-none">
-                    <div class="font-medium text-gray-100">{{ $m->name }}</div>
-                    <div class="text-sm text-gray-400">
-                        @if ($m->category)
-                            {{ $m->category }}
-                        @endif
-                        @if ($m->category && $m->botanical)
-                            ·
-                        @endif
-                        @if ($m->botanical)
-                            {{ $m->botanical }}
-                        @endif
+                    <div>
+                        <div class="font-medium text-gray-100">{{ $m->name }}</div>
+                        <div class="text-sm text-gray-400">
+                            @if ($m->category)
+                                {{ $m->category }}
+                            @endif
+                            @if ($m->category && $m->botanical)
+                                ·
+                            @endif
+                            @if ($m->botanical)
+                                {{ $m->botanical }}
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Tags --}}
+                    @php
+                        $colors = [
+                            'pyramid' => 'bg-indigo-900 border-indigo-700 text-indigo-100',
+                            'families' => 'bg-green-900 border-green-700 text-green-100',
+                            'functions' => 'bg-yellow-900 border-yellow-700 text-yellow-100',
+                            'safety' => 'bg-red-900 border-red-700 text-red-100',
+                            'effects' => 'bg-purple-900 border-purple-700 text-purple-100',
+                            'ifra' => 'bg-blue-900 border-blue-700 text-blue-100',
+                        ];
+
+                        $chips = [];
+
+                        // Pyramid
+                        foreach ((array) $m->pyramid ?? [] as $p) {
+                            $chips[] = ['label' => Str::ucfirst($p), 'class' => $colors['pyramid']];
+                        }
+
+                        // Families
+                        foreach ((array) $m->families ?? [] as $p) {
+                            $chips[] = ['label' => Str::ucfirst($p), 'class' => $colors['families']];
+                        }
+
+                        // Functions
+                        foreach ((array) $m->functions ?? [] as $p) {
+                            $chips[] = ['label' => Str::ucfirst($p), 'class' => $colors['functions']];
+                        }
+
+                        // Safety
+                        foreach ((array) $m->safety ?? [] as $p) {
+                            $chips[] = ['label' => Str::ucfirst($p), 'class' => $colors['safety']];
+                        }
+
+                        // Effects
+                        foreach ((array) $m->effects ?? [] as $p) {
+                            $chips[] = ['label' => Str::ucfirst($p), 'class' => $colors['effects']];
+                        }
+
+                        // IFRA max %
+                        if (!is_null($m->ifra_max_pct)) {
+                            $chips[] = [
+                                'label' =>
+                                    'IFRA ' .
+                                    rtrim(rtrim(number_format((float) $m->ifra_max_pct, 2, '.', ''), '0'), '.') .
+                                    '%',
+                                'class' => $colors['ifra'],
+                            ];
+                        }
+                    @endphp
+
+                    <div class="flex flex-wrap gap-2 justify-end">
+                        @foreach ($chips as $chip)
+                            <span
+                                class="px-2 py-0.5 text-xs rounded border {{ $chip['class'] }}">{{ $chip['label'] }}</span>
+                        @endforeach
                     </div>
                 </a>
             @empty

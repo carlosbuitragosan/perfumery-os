@@ -328,3 +328,28 @@ it('renders all taxonomy options on the edit form', function () {
 
     expect($crawler->filter('input[name="ifra_max_pct"][type="number"]')->count())->toBe(1);
 });
+
+it('shows taxonomy tags for each material on the index', function () {
+    $material = Material::create(materialPayload([
+        'families' => ['citrus'],
+        'functions' => ['fixative'],
+        'safety' => ['sensitizer'],
+        'effects' => ['uplifting'],
+        'ifra_max_pct' => 1.0,
+    ]));
+
+    $response = $this->actingAs($this->user)->get('/materials');
+    $response->assertOk();
+
+    $response
+        ->assertSee('Lavender')
+        ->assertSee('EO')
+        ->assertSee('Lavandula Angustifolia')
+        ->assertSee('Top')
+        ->assertSee('Heart')
+        ->assertSee('Citrus')
+        ->assertSee('Fixative')
+        ->assertSee('Sensitizer')
+        ->assertSee('Uplifting')
+        ->assertSee('IFRA 1%');
+});

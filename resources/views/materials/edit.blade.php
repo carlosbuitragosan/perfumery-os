@@ -29,102 +29,104 @@
                     value="{{ old('botanical', $material->botanical) }}">
             </label>
 
-            {{-- Pyramid --}}
-            @php
-                $currentPyramid = collect(old('pyramid', $material->pyramid ?? []));
-            @endphp
-            <div class="space-y-2">
-                <span class="text-sm font-medium">Pyramid</span>
-                <div class="flex flex-wrap gap-3">
-                    <label class="inline-flex items-center gap-2">
-                        <input class="rounded" type="checkbox" name="pyramid[]" value="top"
-                            @checked($currentPyramid->contains('top'))>
-                        <span class="text-sm">TOP</span>
+            <div class="space-y-6">
+                {{-- Pyramid --}}
+                @php
+                    $currentPyramid = collect(old('pyramid', $material->pyramid ?? []));
+                @endphp
+                <div class="space-y-2">
+                    <span class="text-sm font-medium">Pyramid</span>
+                    <div class="flex flex-wrap gap-3">
+                        <label class="inline-flex items-center gap-2">
+                            <input class="rounded" type="checkbox" name="pyramid[]" value="top"
+                                @checked($currentPyramid->contains('top'))>
+                            <span class="text-sm">TOP</span>
+                        </label>
+                        <label class="inline-flex items-center gap-2">
+                            <input class="rounded" type="checkbox" name="pyramid[]" value="heart"
+                                @checked($currentPyramid->contains('heart'))>
+                            <span class="text-sm">HEART</span>
+                        </label>
+                        <label class="inline-flex items-center gap-2">
+                            <input class="rounded" type="checkbox" name="pyramid[]" value="base"
+                                @checked($currentPyramid->contains('base'))>
+                            <span class="text-sm">BASE</span>
+                        </label>
+                    </div>
+                </div>
+
+                @error('pyramid')
+                    <div class="text-red-500 text-sm">{{ message }}</div>
+                @enderror
+                @error('pyramid.*')
+                    <div class="text-red-500 text-sm">{{ message }}</div>
+                @enderror
+
+                {{-- Families --}}
+                <div class="space-y-2">
+                    <span class="text-sm">Families</span>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (['citrus', 'floral', 'herbal', 'woody', 'resinous'] as $v)
+                            <label class="inline-flex items-center gap-2">
+                                <input class="rounded" type="checkbox" name="families[]" value="{{ $v }}"
+                                    @checked(collect(old('families', $material->families ?? []))->contains($v))>
+                                <span class="text-sm">{{ strtoupper($v) }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Functions --}}
+                <div class="space-y-2">
+                    <span class="text-sm">Functions</span>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (['fixative', 'modifier', 'blender'] as $v)
+                            <label class="inline-flex items-center gap-2">
+                                <input class="rounded" type="checkbox" name="functions[]" value="{{ $v }}"
+                                    @checked(collect(old('functions', $material->functions ?? []))->contains($v))>
+                                <span class="text-sm">{{ strtoupper($v) }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Safety --}}
+                <div class="space-y-2">
+                    <span class="text-sm">Safety</span>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (['photosensitizing', 'irritant', 'allergenic', 'sensitizer'] as $v)
+                            <label class="inline-flex items-center gap-2">
+                                <input class="rounded" type="checkbox" name="safety[]" value="{{ $v }}"
+                                    @checked(collect(old('safety', $material->safety ?? []))->contains($v))>
+                                <span class="text-sm">{{ strtoupper($v) }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Effects --}}
+                <div class="space-y-2">
+                    <span class="text-sm">Effects</span>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (['calming', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulating', 'balancing'] as $v)
+                            <label class="inline-flex items-center gap-2">
+                                <input class="rounded" type="checkbox" name="effects[]" value="{{ $v }}"
+                                    @checked(collect(old('effects', $material->effects ?? []))->contains($v))>
+                                <span class="text-sm">{{ strtoupper($v) }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- IFRA max % --}}
+                <div class="space-y-2">
+                    <label class="block">
+                        <span class="text-sm font-medium">IFRA max %</span>
+                        <input class="p-2 w-full" type="number" name="ifra_max_pct" step="0.01" min="0"
+                            max="100" value="{{ old('ifra_max_pct', $material->ifra_max_pct) }}"
+                            placeholder="e.g. 1.0">
                     </label>
-                    <label class="inline-flex items-center gap-2">
-                        <input class="rounded" type="checkbox" name="pyramid[]" value="heart"
-                            @checked($currentPyramid->contains('heart'))>
-                        <span class="text-sm">HEART</span>
-                    </label>
-                    <label class="inline-flex items-center gap-2">
-                        <input class="rounded" type="checkbox" name="pyramid[]" value="base"
-                            @checked($currentPyramid->contains('base'))>
-                        <span class="text-sm">BASE</span>
-                    </label>
                 </div>
-            </div>
-
-            @error('pyramid')
-                <div class="text-red-500 text-sm">{{ message }}</div>
-            @enderror
-            @error('pyramid.*')
-                <div class="text-red-500 text-sm">{{ message }}</div>
-            @enderror
-
-            {{-- Families --}}
-            <div class="space-y-2">
-                <span class="text-sm">Families</span>
-                <div class="flex flex-wrap gap-3">
-                    @foreach (['citrus', 'floral', 'herbal', 'woody', 'resinous'] as $v)
-                        <label class="inline-flex items-center gap-2">
-                            <input class="rounded" type="checkbox" name="families[]" value="{{ $v }}"
-                                @checked(collect(old('families', $material->families ?? []))->contains($v))>
-                            <span class="text-sm">{{ strtoupper($v) }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- Functions --}}
-            <div class="space-y-2">
-                <span class="text-sm">Functions</span>
-                <div class="flex flex-wrap gap-3">
-                    @foreach (['fixative', 'modifier', 'blender'] as $v)
-                        <label class="inline-flex items-center gap-2">
-                            <input class="rounded" type="checkbox" name="functions[]" value="{{ $v }}"
-                                @checked(collect(old('functions', $material->functions ?? []))->contains($v))>
-                            <span class="text-sm">{{ strtoupper($v) }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- Safety --}}
-            <div class="space-y-2">
-                <span class="text-sm">Safety</span>
-                <div class="flex flex-wrap gap-3">
-                    @foreach (['photosensitizing', 'irritant', 'allergenic', 'sensitizer'] as $v)
-                        <label class="inline-flex items-center gap-2">
-                            <input class="rounded" type="checkbox" name="safety[]" value="{{ $v }}"
-                                @checked(collect(old('safety', $material->safety ?? []))->contains($v))>
-                            <span class="text-sm">{{ strtoupper($v) }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- Effects --}}
-            <div class="space-y-2">
-                <span class="text-sm">Effects</span>
-                <div class="flex flex-wrap gap-3">
-                    @foreach (['calming', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulating', 'balancing'] as $v)
-                        <label class="inline-flex items-center gap-2">
-                            <input class="rounded" type="checkbox" name="effects[]" value="{{ $v }}"
-                                @checked(collect(old('effects', $material->effects ?? []))->contains($v))>
-                            <span class="text-sm">{{ strtoupper($v) }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- IFRA max % --}}
-            <div class="space-y-2">
-                <label class="block">
-                    <span class="text-sm font-medium">IFRA max %</span>
-                    <input class="p-2 w-full" type="number" name="ifra_max_pct" step="0.01" min="0"
-                        max="100" value="{{ old('ifra_max_pct', $material->ifra_max_pct) }}"
-                        placeholder="e.g. 1.0">
-                </label>
             </div>
 
             <label class="block">
