@@ -18,12 +18,6 @@
             </label>
 
             <label class="block">
-                <span class="text-sm">Category</span>
-                <input type="text" name="category" class="p-2 w-full"
-                    value="{{ old('category', $material->category) }}">
-            </label>
-
-            <label class="block">
                 <span class="text-sm">Botanical</span>
                 <input type="text" name="botanical" class="p-2 w-full"
                     value="{{ old('botanical', $material->botanical) }}">

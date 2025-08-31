@@ -16,7 +16,6 @@ function materialPayload(array $overrides = []): array
 {
     return array_merge([
         'name' => 'Lavender',
-        'category' => 'EO',
         'botanical' => 'Lavandula Angustifolia',
         'notes' => 'test',
         'pyramid' => ['top', 'heart'],
@@ -43,7 +42,6 @@ it('validates and creates a material via POST', function () {
     $this->actingAs($this->user)
         ->post('/materials', materialPayload([
             'name' => 'Peppermint',
-            'category' => 'EO',
             'botanical' => 'Mentha piperita',
             'notes' => 'Fresh',
         ]))
@@ -102,14 +100,12 @@ it('updates a material and redirects', function () {
     $this->actingAs($this->user)
         ->patch(route('materials.update', $material), materialPayload([
             'name' => 'Lavendola',
-            'category' => 'EO',
         ]))
         ->assertRedirect('/materials');
 
     $this->assertDatabaseHas('materials', [
         'id' => $material->id,
         'name' => 'Lavendola',
-        'category' => 'EO',
         'botanical' => 'Lavandula Angustifolia',
         'notes' => 'test',
     ]);
@@ -343,7 +339,6 @@ it('shows taxonomy tags for each material on the index', function () {
 
     $response
         ->assertSee('Lavender')
-        ->assertSee('EO')
         ->assertSee('Lavandula Angustifolia')
         ->assertSee('Top')
         ->assertSee('Heart')

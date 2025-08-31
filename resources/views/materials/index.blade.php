@@ -19,13 +19,7 @@
                     class="block px-3 py-3 hover:bg-gray-800 focus:bg-gray-800 focus:outline-none">
                     <div>
                         <div class="font-medium text-gray-100">{{ $m->name }}</div>
-                        <div class="text-sm text-gray-400">
-                            @if ($m->category)
-                                {{ $m->category }}
-                            @endif
-                            @if ($m->category && $m->botanical)
-                                ·
-                            @endif
+                        <div class="text-sm text-gray-400 mb-1">
                             @if ($m->botanical)
                                 {{ $m->botanical }}
                             @endif
