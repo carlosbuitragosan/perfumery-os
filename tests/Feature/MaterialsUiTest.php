@@ -344,5 +344,5 @@ it('shows taxonomy tags for each material on the index', function () {
         ->assertSee('Fixative')
         ->assertSee('Sensitizer')
         ->assertSee('Uplifting')
-        ->assertSee('IFRA 1%');
+        ->assertSee('IFRA4 1%');
 });
