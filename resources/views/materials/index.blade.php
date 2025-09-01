@@ -82,6 +82,11 @@
                                 class="px-2 py-0.5 text-xs rounded border {{ $chip['class'] }}">{{ $chip['label'] }}</span>
                         @endforeach
                     </div>
+                    <div class="text-sm text-gray-400 mt-2">
+                        @if ($m->notes)
+                            {{ $m->notes }}
+                        @endif
+                    </div>
                 </a>
             @empty
                 <div class="p-3 text-gray-400">No materials yet.</div>
