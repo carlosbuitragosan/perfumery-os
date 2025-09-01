@@ -54,14 +54,14 @@
                             $chips[] = ['label' => Str::ucfirst($p), 'class' => $colors['functions']];
                         }
 
-                        // Safety
-                        foreach ((array) $m->safety ?? [] as $p) {
-                            $chips[] = ['label' => Str::ucfirst($p), 'class' => $colors['safety']];
-                        }
-
                         // Effects
                         foreach ((array) $m->effects ?? [] as $p) {
                             $chips[] = ['label' => Str::ucfirst($p), 'class' => $colors['effects']];
+                        }
+
+                        // Safety
+                        foreach ((array) $m->safety ?? [] as $p) {
+                            $chips[] = ['label' => Str::ucfirst($p), 'class' => $colors['safety']];
                         }
 
                         // IFRA max %

@@ -26,17 +26,17 @@
                         <label class="inline-flex items-center gap-2">
                             <input class="rounded" type="checkbox" name="pyramid[]" value="top"
                                 @checked(collect(old('pyramid', []))->contains('top'))>
-                            <span class="text-sm">TOP</span>
+                            <span class="text-sm">Top</span>
                         </label>
                         <label class="inline-flex items-center gap-2">
                             <input class="rounded" type="checkbox" name="pyramid[]" value="heart"
                                 @checked(collect(old('pyramid', []))->contains('heart'))>
-                            <span class="text-sm">HEART</span>
+                            <span class="text-sm">Heart</span>
                         </label>
                         <label class="inline-flex items-center gap-2">
                             <input class="rounded" type="checkbox" name="pyramid[]" value="base"
                                 @checked(collect(old('pyramid', []))->contains('base'))>
-                            <span class="text-sm">BASE</span>
+                            <span class="text-sm">Base</span>
                         </label>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="families[]" value="{{ $v }}"
                                     @checked(collect(old('families', []))->contains($v))>
-                                <span>{{ strtoupper($v) }}</span>
+                                <span>{{ ucfirst($v) }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -70,21 +70,7 @@
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="functions[]" value="{{ $v }}"
                                     @checked(collect(old('functions', []))->contains($v))>
-                                <span>{{ strtoupper($v) }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Safety --}}
-                <div class="space-y-2">
-                    <span class="text-sm">Safety</span>
-                    <div class="flex flex-wrap gap-3">
-                        @foreach (config('materials.safety') as $v)
-                            <label class="inline-flex items-center gap-2">
-                                <input class="rounded" type="checkbox" name="safety[]" value="{{ $v }}"
-                                    @checked(collect(old('Safety', []))->contains($v))>
-                                <span>{{ strtoupper($v) }}</span>
+                                <span>{{ ucfirst($v) }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -98,7 +84,21 @@
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="effects[]" value="{{ $v }}"
                                     @checked(collect(old('Effects', []))->contains($v))>
-                                <span>{{ strtoupper($v) }}</span>
+                                <span>{{ ucfirst($v) }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Safety --}}
+                <div class="space-y-2">
+                    <span class="text-sm">Safety</span>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (config('materials.safety') as $v)
+                            <label class="inline-flex items-center gap-2">
+                                <input class="rounded" type="checkbox" name="safety[]" value="{{ $v }}"
+                                    @checked(collect(old('Safety', []))->contains($v))>
+                                <span>{{ ucfirst($v) }}</span>
                             </label>
                         @endforeach
                     </div>

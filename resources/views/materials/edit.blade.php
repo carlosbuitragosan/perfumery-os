@@ -34,17 +34,17 @@
                         <label class="inline-flex items-center gap-2">
                             <input class="rounded" type="checkbox" name="pyramid[]" value="top"
                                 @checked($currentPyramid->contains('top'))>
-                            <span class="text-sm">TOP</span>
+                            <span class="text-sm">Top</span>
                         </label>
                         <label class="inline-flex items-center gap-2">
                             <input class="rounded" type="checkbox" name="pyramid[]" value="heart"
                                 @checked($currentPyramid->contains('heart'))>
-                            <span class="text-sm">HEART</span>
+                            <span class="text-sm">Heart</span>
                         </label>
                         <label class="inline-flex items-center gap-2">
                             <input class="rounded" type="checkbox" name="pyramid[]" value="base"
                                 @checked($currentPyramid->contains('base'))>
-                            <span class="text-sm">BASE</span>
+                            <span class="text-sm">Base</span>
                         </label>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="families[]" value="{{ $v }}"
                                     @checked(collect(old('families', $material->families ?? []))->contains($v))>
-                                <span class="text-sm">{{ strtoupper($v) }}</span>
+                                <span class="text-sm">{{ ucfirst($v) }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -78,21 +78,7 @@
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="functions[]" value="{{ $v }}"
                                     @checked(collect(old('functions', $material->functions ?? []))->contains($v))>
-                                <span class="text-sm">{{ strtoupper($v) }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Safety --}}
-                <div class="space-y-2">
-                    <span class="text-sm">Safety</span>
-                    <div class="flex flex-wrap gap-3">
-                        @foreach (config('materials.safety') as $v)
-                            <label class="inline-flex items-center gap-2">
-                                <input class="rounded" type="checkbox" name="safety[]" value="{{ $v }}"
-                                    @checked(collect(old('safety', $material->safety ?? []))->contains($v))>
-                                <span class="text-sm">{{ strtoupper($v) }}</span>
+                                <span class="text-sm">{{ ucfirst($v) }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -106,7 +92,21 @@
                             <label class="inline-flex items-center gap-2">
                                 <input class="rounded" type="checkbox" name="effects[]" value="{{ $v }}"
                                     @checked(collect(old('effects', $material->effects ?? []))->contains($v))>
-                                <span class="text-sm">{{ strtoupper($v) }}</span>
+                                <span class="text-sm">{{ ucfirst($v) }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Safety --}}
+                <div class="space-y-2">
+                    <span class="text-sm">Safety</span>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (config('materials.safety') as $v)
+                            <label class="inline-flex items-center gap-2">
+                                <input class="rounded" type="checkbox" name="safety[]" value="{{ $v }}"
+                                    @checked(collect(old('safety', $material->safety ?? []))->contains($v))>
+                                <span class="text-sm">{{ ucfirst($v) }}</span>
                             </label>
                         @endforeach
                     </div>
