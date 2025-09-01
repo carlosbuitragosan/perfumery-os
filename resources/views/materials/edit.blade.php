@@ -116,8 +116,8 @@
                 <div class="space-y-2">
                     <label class="block">
                         <span class="text-sm font-medium">IFRA max %</span>
-                        <input class="p-2 w-full" type="number" name="ifra_max_pct" step="0.01" min="0"
-                            max="100" value="{{ old('ifra_max_pct', $material->ifra_max_pct) }}"
+                        <input class="p-2 w-full" type="number" inputmode="decimal" name="ifra_max_pct" step="0.01"
+                            min="0" max="100" value="{{ old('ifra_max_pct', $material->ifra_max_pct) }}"
                             placeholder="e.g. 1.0">
                     </label>
                 </div>

@@ -68,7 +68,7 @@
                         if (!is_null($m->ifra_max_pct)) {
                             $chips[] = [
                                 'label' =>
-                                    'IFRA ' .
+                                    'IFRA4 ' .
                                     rtrim(rtrim(number_format((float) $m->ifra_max_pct, 2, '.', ''), '0'), '.') .
                                     '%',
                                 'class' => $colors['ifra'],
