@@ -4,10 +4,23 @@
     </x-slot>
 
     <div class="p-4 space-y-4">
+        {{-- Searchbox --}}
+        <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                @include('icons.search')
+            </span>
+            <form action="">
+                <input class="w-full pl-10" type="search" name="query" value="{{ request('query') }}">
+            </form>
+        </div>
+
+        {{-- Link to create material --}}
         <a href="{{ route('materials.create') }}"
             class="inline-block bg-gray-800 text-white px-3 py-2 rounded-md hover:bg-gray-700">
             ADD
         </a>
+
+
 
         @if (session('ok'))
             <div class="rounded bg-green-900/50 text-green-200 px-3 py-2">{{ session('ok') }}</div>

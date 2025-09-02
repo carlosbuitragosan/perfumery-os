@@ -207,6 +207,7 @@ it('creates a material with allowed taxonomy tags and IFRA percent', function ()
     ]))
         ->assertRedirect('/materials');
 
+    // Checks the database
     $material = Material::where('name', 'Lavender')->first();
     expect($material)->not->toBeNull();
     expect($material->families)->toContain('citrus');
@@ -252,7 +253,7 @@ it('shows and pre-checks taxonomy fields on the edit form', function () {
     $response = getAs($this->user, route('materials.edit', $material))->assertOk();
     $crawler = crawl($response);
 
-    // fields present
+    // All fields present
     assertInputs($crawler, 'families[]', config('materials.families'));
     assertInputs($crawler, 'functions[]', config('materials.functions'));
     assertInputs($crawler, 'safety[]', config('materials.safety'));
@@ -313,4 +314,11 @@ it('shows taxonomy tags for each material on the index', function () {
 
         // IFRA formatted label
         ->assertSee('IFRA4 1%');
+});
+
+it('shows a search input on the materials index', function () {
+    getAs($this->user, 'materials')
+        ->assertOk()
+        ->assertSee('name="query"', false)
+        ->assertSee('type="search"', false);
 });
