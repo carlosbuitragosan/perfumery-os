@@ -7,8 +7,9 @@ use Symfony\Component\DomCrawler\Crawler;
 
 uses(RefreshDatabase::class)->in('Feature');
 
+// Create user
 beforeEach(function () {
-    $this->user = User::Factory()->create();
+    $this->user = User::factory()->create();
 });
 
 // Default payload for creating/updating a material
@@ -28,31 +29,75 @@ function makeMaterial(array $overrides = []): material
     return Material::create(materialPayload($overrides));
 }
 
+// Act as user and GET/POST/PATCH
+function getAs(User $user, string $uri)
+{
+    return test()->actingAs($user)->get($uri);
+}
+
+function postAs(User $user, string $uri, array $data = [])
+{
+    return test()->actingAs($user)->post($uri, $data);
+}
+
+function patchAs(User $user, string $uri, array $data = [])
+{
+    return test()->actingAs($user)->patch($uri, $data);
+}
+
+// Build a DomCrawler from the response
+function crawl($response): Crawler
+{
+    return new Crawler($response->getContent());
+}
+
+// Assert a set of checkbox inputs exists by name/value
+function assertInputs(Crawler $crawler, string $name, array $expected): void
+{
+    expect($crawler->filter("input[name=\"{$name}\"]")->count())->toBe(count($expected));
+
+    foreach ($expected as $value) {
+        expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->count())->toBe(1, "Missing input[name=\"{$name}\"][value=\"{$value}\"]");
+    }
+}
+
+// Assert specific checkbox values are checked / not checked
+function assertChecked(Crawler $crawler, string $name, array $values): void
+{
+    foreach ($values as $value) {
+        expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->attr('checked'))->not->toBeNull("expected '{$name}' '{$value}' to be checked");
+    }
+}
+
+function assertNotChecked(Crawler $crawler, string $name, array $values): void
+{
+    foreach ($values as $value) {
+        expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->attr('checked'))->toBeNull("Expected '{$name}' '{$value}' to be NOT checked");
+    }
+}
+
 it('redirect guests to login on /materials', function () {
     $this->get('/materials')->assertRedirect('/login');
 });
 
 it('validates and creates a material via POST', function () {
     // Missing name -> validation error
-    $this->actingAs($this->user)
-        ->post('/materials', materialPayload(['name' => '']))
+    postAs($this->user, '/materials', materialPayload(['name' => '']))
         ->assertSessionHasErrors(['name']);
 
     // Valid create ->  redirect + persisted
-    $this->actingAs($this->user)
-        ->post('/materials', materialPayload([
-            'name' => 'Peppermint',
-            'botanical' => 'Mentha piperita',
-            'notes' => 'Fresh',
-        ]))
+    postAs($this->user, '/materials', materialPayload([
+        'name' => 'Peppermint',
+        'botanical' => 'Mentha piperita',
+        'notes' => 'Fresh',
+    ]))
         ->assertRedirect('/materials');
 
     $this->assertDatabaseHas('materials', ['name' => 'Peppermint']);
 });
 
 it('persists botanical when provided', function () {
-    $this->actingAs($this->user)
-        ->post('/materials', materialPayload())
+    postAs($this->user, '/materials', materialPayload())
         ->assertRedirect('/materials');
 
     $this->assertDatabaseHas('materials', [
@@ -66,10 +111,9 @@ it('rejects duplicate material names (case-insensitive)', function () {
 
     expect(Material::count())->toBe(1);
 
-    $this->actingAs($this->user)
-        ->post('/materials', materialPayload([
-            'name' => 'Lavender',
-        ]))
+    postAs($this->user, '/materials', materialPayload([
+        'name' => 'Lavender',
+    ]))
         ->assertSessionHasErrors(['name']);
 
     expect(Material::whereRaw('LOWER(name) = ?', ['lavender'])->count())->toBe(1);
@@ -78,8 +122,7 @@ it('rejects duplicate material names (case-insensitive)', function () {
 it('shows the edit form for a material', function () {
     $material = makeMaterial();
 
-    $this->actingAs($this->user)
-        ->get(route('materials.edit', $material))
+    getAs($this->user, route('materials.edit', $material))
         ->assertOk()
         ->assertSee('Edit Material')
         ->assertSee('Lavender')
@@ -89,19 +132,16 @@ it('shows the edit form for a material', function () {
 it('links each material on the index to its edit page', function () {
     $material = makeMaterial();
 
-    $this->actingAs($this->user)
-        ->get('/materials')
+    getAs($this->user, '/materials')
         ->assertSee(e(route('materials.edit', $material)));
 });
 
 it('updates a material and redirects', function () {
     $material = makeMaterial();
 
-    $this->actingAs($this->user)
-        ->patch(route('materials.update', $material), materialPayload([
-            'name' => 'Lavendola',
-        ]))
-        ->assertRedirect('/materials');
+    patchAs($this->user, route('materials.update', $material), materialPayload([
+        'name' => 'Lavendola',
+    ]))->assertRedirect('/materials');
 
     $this->assertDatabaseHas('materials', [
         'id' => $material->id,
@@ -112,11 +152,10 @@ it('updates a material and redirects', function () {
 });
 
 it('saves pyramid tiers for a material', function () {
-    $this->actingAs($this->user)
-        ->post('/materials', materialPayload([
-            'name' => 'Bergamot',
-            'pyramid' => ['top'],
-        ]))
+    postAs($this->user, '/materials', materialPayload([
+        'name' => 'Bergamot',
+        'pyramid' => ['top'],
+    ]))
         ->assertRedirect('/materials');
 
     $this->assertDatabaseHas('materials', [
@@ -128,24 +167,19 @@ it('saves pyramid tiers for a material', function () {
 });
 
 it('shows pyramid tier inputs on the create form', function () {
-    $this->actingAs($this->user)
-        ->get('/materials/create')
-        ->assertOk()
-        ->assertSee('Pyramid')
-        ->assertSee('name="pyramid[]"', false)
-        ->assertSee('value="top"', false)
-        ->assertSee('value="heart"', false)
-        ->assertSee('value="base"', false);
+    $reponse = getAs($this->user, '/materials/create')->assertOk();
+    $crawler = crawl($reponse);
+
+    assertInputs($crawler, 'pyramid[]', ['top', 'heart', 'base']);
 });
 
 it('updates pyramid values for a material', function () {
     $material = makeMaterial();
 
-    $this->actingAs($this->user)
-        ->patch(route('materials.update', $material), materialPayload([
-            'name' => 'Lavender',
-            'pyramid' => ['top', 'heart'],
-        ]))
+    patchAs($this->user, route('materials.update', $material), materialPayload([
+        'name' => 'Lavender',
+        'pyramid' => ['top', 'heart'],
+    ]))
         ->assertRedirect('/materials');
 
     $this->assertDatabaseHas('materials', [
@@ -156,29 +190,21 @@ it('updates pyramid values for a material', function () {
 
 it('shows and pre-checks pyramid values on the edit form', function () {
     $material = makeMaterial();
+    $response = getAs($this->user, route('materials.edit', $material))->assertOk();
+    $crawler = crawl($response);
 
-    $this->actingAs($this->user)
-        ->get(route('materials.edit', $material))
-        ->assertOk()
-        ->assertSee('Pyramid')
-        ->assertSee('name="pyramid[]"', false)
-        ->assertSee('value="top"', false)
-        ->assertSee('value="heart"', false)
-        ->assertSee('value="base"', false)
-        ->assertSeeInOrder(['value="top"', 'checked'], false)
-        ->assertSeeInOrder(['value="heart"', 'checked'], false)
-        ->assertDontSee('value="base" checked', false);
+    assertChecked($crawler, 'pyramid[]', ['top', 'heart']);
+    assertNotChecked($crawler, 'pyramid[]', ['base']);
 });
 
 it('creates a material with allowed taxonomy tags and IFRA percent', function () {
-    $this->actingAs($this->user)
-        ->post('/materials', materialPayload([
-            'families' => ['citrus'],
-            'functions' => ['modifier'],
-            'safety' => ['phototoxic', 'irritant'],
-            'effects' => ['uplifting'],
-            'ifra_max_pct' => 1.0,
-        ]))
+    postAs($this->user, '/materials', materialPayload([
+        'families' => ['citrus'],
+        'functions' => ['modifier'],
+        'safety' => ['phototoxic', 'irritant'],
+        'effects' => ['uplifting'],
+        'ifra_max_pct' => 1.0,
+    ]))
         ->assertRedirect('/materials');
 
     $material = Material::where('name', 'Lavender')->first();
@@ -191,69 +217,28 @@ it('creates a material with allowed taxonomy tags and IFRA percent', function ()
 });
 
 it('renders all taxonomy options on the create form', function () {
-    $material = Material::create(materialPayload());
-    $response = $this->actingAs($this->user)->get(route('materials.create', $material));
-    $response->assertOk();
-    $crawler = new Crawler($response->getContent());
+    $response = getAs($this->user, route('materials.create'))->assertOk();
+    $crawler = crawl($response);
 
-    $families = config('materials.families');
-    $functions = config('materials.functions');
-    $safety = config('materials.safety');
-    $effects = config('materials.effects');
-
-    $assertInputs = function (array $expected, string $name) use ($crawler) {
-        expect($crawler->filter("input[name=\"{$name}\"]")->count())->toBe(count($expected));
-
-        foreach ($expected as $value) {
-            expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->count())->toBe(1, "Missing input[name=\"{$name}\"][value=\"{$value}\"]");
-        }
-    };
-
-    $assertInputs($families, 'families[]');
-    $assertInputs($functions, 'functions[]');
-    $assertInputs($safety, 'safety[]');
-    $assertInputs($effects, 'effects[]');
+    assertInputs($crawler, 'families[]', config('materials.families'));
+    assertInputs($crawler, 'functions[]', config('materials.functions'));
+    assertInputs($crawler, 'safety[]', config('materials.safety'));
+    assertInputs($crawler, 'effects[]', config('materials.effects'));
 
     expect($crawler->filter('input[name="ifra_max_pct"][type="number"]')->count())->toBe(1);
 });
 
 it('shows taxonomy fields on the create material form', function () {
-    $this->actingAs($this->user)
-        ->get('/materials/create')
-        ->assertOk()
+    $response = getAs($this->user, '/materials/create')->assertOk();
+    $crawler = crawl($response);
 
-    // Families"
-        ->assertSee('name="families[]"', false)
-        ->assertSee('value="citrus"', false)
-        ->assertSee('value="floral"', false)
-        ->assertSee('value="herbal"', false)
-        ->assertSee('value="woody"', false)
-        ->assertSee('value="resinous"', false)
-
-    // Functions
-        ->assertSee('name="functions[]"', false)
-        ->assertSee('value="fixative"', false)
-        ->assertSee('value="modifier"', false)
-
-    // Safety
-        ->assertSee('name="safety[]"', false)
-        ->assertSee('value="phototoxic"', false)
-        ->assertSee('value="irritant"', false)
-        ->assertSee('value="allergenic"', false)
-        ->assertSee('value="sensitizer"', false)
-
-    // Effects
-        ->assertSee('name="effects[]"', false)
-        ->assertSee('value="calming"', false)
-        ->assertSee('value="uplifting"', false)
-        ->assertSee('value="grounding"', false)
-        ->assertSee('value="sedative"', false)
-        ->assertSee('value="aphrodisiac"', false)
-        ->assertSee('value="stimulant"', false)
+    assertInputs($crawler, 'families[]', config('materials.families'));
+    assertInputs($crawler, 'functions[]', config('materials.functions'));
+    assertInputs($crawler, 'safety[]', config('materials.safety'));
+    assertInputs($crawler, 'effects[]', config('materials.effects'));
 
     // IFRA max %
-        ->assertSee('name="ifra_max_pct"', false)
-        ->assertSee('type="number"', false);
+    expect($crawler->filter('input[name="ifra_max_pct"][type="number"]')->count())->toBe(1, 'Missing IFRA max % input');
 });
 
 it('shows and pre-checks taxonomy fields on the edit form', function () {
@@ -264,32 +249,24 @@ it('shows and pre-checks taxonomy fields on the edit form', function () {
         'effects' => ['uplifting'],
         'ifra_max_pct' => 1.0,
     ]));
+    $response = getAs($this->user, route('materials.edit', $material))->assertOk();
+    $crawler = crawl($response);
 
-    $this->actingAs($this->user)
-        ->get(route('materials.edit', $material))
-        ->assertOk()
-
-        // Fields exist
-        ->assertSee('name="families[]"', false)
-        ->assertSee('name="functions[]"', false)
-        ->assertSee('name="safety[]"', false)
-        ->assertSee('name="effects[]"', false)
-        ->assertSee('name="ifra_max_pct"', false);
-
-    $response = $this->actingAs($this->user)->get(route('materials.edit', $material));
-    $response->assertOk();
-    $html = $response->getContent();
-    $crawler = new Crawler($html);
+    // fields present
+    assertInputs($crawler, 'families[]', config('materials.families'));
+    assertInputs($crawler, 'functions[]', config('materials.functions'));
+    assertInputs($crawler, 'safety[]', config('materials.safety'));
+    assertInputs($crawler, 'effects[]', config('materials.effects'));
 
     // checked
-    expect($crawler->filter('input[name="families[]"][value="citrus"]')->attr('checked'))->not->toBeNull();
-    expect($crawler->filter('input[name="functions[]"][value="fixative"]')->attr('checked'))->not->toBeNull();
-    expect($crawler->filter('input[name="safety[]"][value="sensitizer"]')->attr('checked'))->not->toBeNull();
-    expect($crawler->filter('input[name="effects[]"][value="uplifting"]')->attr('checked'))->not->toBeNull();
+    assertChecked($crawler, 'families[]', ['citrus']);
+    assertChecked($crawler, 'functions[]', ['fixative']);
+    assertChecked($crawler, 'safety[]', ['sensitizer']);
+    assertChecked($crawler, 'effects[]', ['uplifting']);
 
-    // unchecked
-    expect($crawler->filter('input[name="families[]"][value="floral"]')->attr('checked'))->toBeNull();
-    expect($crawler->filter('input[name="safety[]"][value="irritant"]')->attr('checked'))->toBeNull();
+    // unchecked sample
+    assertNotChecked($crawler, 'families[]', ['floral']);
+    assertNotChecked($crawler, 'safety[]', ['irritant']);
 
     // IFRA pre-filled value
     $ifra = $crawler->filter('input[name="ifra_max_pct"]')->attr('value');
@@ -298,33 +275,19 @@ it('shows and pre-checks taxonomy fields on the edit form', function () {
 
 it('renders all taxonomy options on the edit form', function () {
     $material = Material::create(materialPayload());
-    $response = $this->actingAs($this->user)->get(route('materials.edit', $material));
-    $response->assertOk();
-    $crawler = new Crawler($response->getContent());
+    $response = getAs($this->user, route('materials.edit', $material))->assertOk();
+    $crawler = crawl($response);
 
-    $families = config('materials.families');
-    $functions = config('materials.functions');
-    $safety = config('materials.safety');
-    $effects = config('materials.effects');
-
-    $assertInputs = function (array $expected, string $name) use ($crawler) {
-        expect($crawler->filter("input[name=\"{$name}\"]")->count())->toBe(count($expected));
-
-        foreach ($expected as $value) {
-            expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->count())->toBe(1, "Missing input[name=\"{$name}\"][value=\"{$value}\"]");
-        }
-    };
-
-    $assertInputs($families, 'families[]');
-    $assertInputs($functions, 'functions[]');
-    $assertInputs($safety, 'safety[]');
-    $assertInputs($effects, 'effects[]');
+    assertInputs($crawler, 'families[]', config('materials.families'));
+    assertInputs($crawler, 'functions[]', config('materials.functions'));
+    assertInputs($crawler, 'safety[]', config('materials.safety'));
+    assertInputs($crawler, 'effects[]', config('materials.effects'));
 
     expect($crawler->filter('input[name="ifra_max_pct"][type="number"]')->count())->toBe(1);
 });
 
 it('shows taxonomy tags for each material on the index', function () {
-    $material = Material::create(materialPayload([
+    Material::create(materialPayload([
         'families' => ['citrus'],
         'functions' => ['fixative'],
         'safety' => ['sensitizer'],
@@ -332,17 +295,22 @@ it('shows taxonomy tags for each material on the index', function () {
         'ifra_max_pct' => 1.0,
     ]));
 
-    $response = $this->actingAs($this->user)->get('/materials');
-    $response->assertOk();
+    $response = getAs($this->user, '/materials')->assertOk();
 
     $response
         ->assertSee('Lavender')
         ->assertSee('Lavandula Angustifolia')
+
+        // Pyramid
         ->assertSee('Top')
         ->assertSee('Heart')
+
+        // Functions / Safety / Effects
         ->assertSee('Citrus')
         ->assertSee('Fixative')
         ->assertSee('Sensitizer')
         ->assertSee('Uplifting')
+
+        // IFRA formatted label
         ->assertSee('IFRA4 1%');
 });
