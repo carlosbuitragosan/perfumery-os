@@ -339,7 +339,7 @@ it('filters materials by keywords, based on the material information', function 
     ]));
 
     // Name search
-    getAs($this->user, '/materials?query=lav')
+    getAs($this->user, '/materials?query=lave')
         ->assertOk()
         ->assertSee('Lavender')
         ->assertDontSee('Bergamot');
@@ -351,7 +351,7 @@ it('filters materials by keywords, based on the material information', function 
         ->assertDontSee('Lavender');
 
     // pyramid search
-    getAs($this->user, '/materials?query=hear')
+    getAs($this->user, '/materials?query=heart')
         ->assertOK()
         ->assertSee('Bergamot')
         ->assertSee('Lavender');

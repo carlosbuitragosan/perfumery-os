@@ -17,33 +17,34 @@ class Material extends Model
         'ifra_max_pct' => 'float',
     ];
 
-    public function scopeSearch($query, ?string $searchTerm)
+    public function scopeSearch($query, ?string $term)
     {
-        $searchTerm = trim((string) $searchTerm);
-
-        // Return all materials for an empty query
-        if ($searchTerm === '') {
+        $term = trim((string) $term);
+        if ($term === '') {
             return $query;
         }
 
-        $term = mb_strtolower($searchTerm);
+        $needle = mb_strtolower($term);
 
-        // Search name, botanical name and notes
-        $query->where(function ($q) use ($term) {
-            $q->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"])
-                ->orWhereRaw('LOWER(COALESCE(botanical, "")) LIKE ?', ["%{$term}%"])
-                ->orWhereRaw('LOWER(COALESCE(notes, "")) LIKE ?', ["%{$term}%"]);
-        })
+        return $query->where(function ($q) use ($needle) {
+            // Text fields
+            $q->whereRaw('LOWER(name) LIKE ?', ["%{$needle}%"])
+                ->orWhereRaw('LOWER(COALESCE(botanical, "")) LIKE ?', ["%{$needle}%"])
+                ->orWhereRaw('LOWER(COALESCE(notes, "")) LIKE ?', ["%{$needle}%"]);
 
-        // search pyramid, functions, families, effects, etc (arrays)
-            ->orWhere(function ($j) use ($term) {
-                $like = '%"'.$term.'%"';
-                $j->whereRaw("LOWER(COALESCE(pyramid, '')) LIKE ?", [$like])
-                    ->orWhereRaw("LOWER(COALESCE(families, '')) LIKE ?", [$like])
-                    ->orWhereRaw("LOWER(COALESCE(functions, '')) LIKE ?", [$like])
-                    ->orWhereRaw("LOWER(COALESCE(effects, '')) LIKE ?", [$like])
-                    ->orWhereRaw("LOWER(COALESCE(safety, '')) LIKE ?", [$like]);
-            });
+            // JSON arrays — exact contains (when exact term) + partial fallback via JSON_EXTRACT
+            $jsonLike = function ($col) use ($q, $needle) {
+                // exact (case-insensitive because we store lowercase tags)
+                $q->orWhereJsonContains($col, $needle);
+                // partial match fallback (works on SQLite/MySQL)
+                $q->orWhereRaw('LOWER(COALESCE(JSON_EXTRACT('.$col.', "$"), "")) LIKE ?', ["%{$needle}%"]);
+            };
 
+            $jsonLike('pyramid');
+            $jsonLike('families');
+            $jsonLike('functions');
+            $jsonLike('effects');
+            $jsonLike('safety');
+        });
     }
 }

@@ -25,15 +25,9 @@ class MaterialController extends Controller
         $this->effectsAllowed = config('materials.effects', []);
     }
 
-    // minimal index so redirect('/materials') works
     public function index(Request $request)
     {
-        $materials = Material::search($request->query('query'))
-            ->orderBy('name')
-            ->paginate(20)
-            ->withQueryString();
-
-        return view('materials.index', compact('materials'));
+        return view('materials.index');
     }
 
     // Create form
