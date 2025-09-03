@@ -322,3 +322,55 @@ it('shows a search input on the materials index', function () {
         ->assertSee('name="query"', false)
         ->assertSee('type="search"', false);
 });
+
+it('filters materials by keywords, based on the material information', function () {
+    $lavender = makeMaterial(materialPayload([
+        'families' => ['herbal', 'floral'],
+        'effects' => ['calming'],
+    ]));
+
+    $bergamot = makeMaterial(materialPayload([
+        'name' => 'Bergamot',
+        'botanical' => 'Citrus Bergamia',
+        'families' => ['citrus', 'herbal'],
+        'pyramid' => ['heart'],
+        'effects' => ['uplifting'],
+        'notes' => 'beautiful',
+    ]));
+
+    // Name search
+    getAs($this->user, '/materials?query=lav')
+        ->assertOk()
+        ->assertSee('Lavender')
+        ->assertDontSee('Bergamot');
+
+    // Family search
+    getAs($this->user, '/materials?query=citr')
+        ->assertOK()
+        ->assertSee('Bergamot')
+        ->assertDontSee('Lavender');
+
+    // pyramid search
+    getAs($this->user, '/materials?query=hear')
+        ->assertOK()
+        ->assertSee('Bergamot')
+        ->assertSee('Lavender');
+
+    // Effects search
+    getAs($this->user, '/materials?query=uplift')
+        ->assertOK()
+        ->assertSee('Bergamot')
+        ->assertDontSee('Lavender');
+
+    // botanical name search
+    getAs($this->user, '/materials?query=angust')
+        ->assertOK()
+        ->assertSee('Lavender')
+        ->assertDontSee('Bergamot');
+
+    // Notes search
+    getAs($this->user, '/materials?query=beauti')
+        ->assertOK()
+        ->assertSee('Bergamot')
+        ->assertDontSee('Lavender');
+});

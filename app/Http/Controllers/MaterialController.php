@@ -26,9 +26,12 @@ class MaterialController extends Controller
     }
 
     // minimal index so redirect('/materials') works
-    public function index()
+    public function index(Request $request)
     {
-        $materials = Material::orderBy('name')->paginate(20);
+        $materials = Material::search($request->query('query'))
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
 
         return view('materials.index', compact('materials'));
     }
