@@ -1,17 +1,31 @@
 <div class="space-y-3">
-   <div class="relative">
+   <div class="relative" x-data="{ q: $wire.entangle('query') }">
       <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
          @include('icons.search')
       </span>
       <input
-         class="w-full pl-10"
+         x-model="q"
+         x-ref="search"
+         class="w-full pl-10 pr-8"
          type="search"
          name="query"
-         wire:model.live.debounce.300ms="query"
+         inputmode="search"
+         wire:model.live="query"
          autocomplete="off"
          spellcheck="false"
          enterkeyhint="search"
       />
+      @if ($query !== '')
+         <button
+            x-show="q !== ''"
+            type="button"
+            @click="q=''; $wire.resetPage()"
+            aria-label="Clear search"
+            class="absolute inset-y-0 right-0 pr-3 opacity-80 hover:opacity-100"
+         >
+            <span class="text-xl">&times;</span>
+         </button>
+      @endif
    </div>
 
    {{-- Button to create material --}}

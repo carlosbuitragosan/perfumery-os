@@ -374,3 +374,13 @@ it('filters materials by keywords, based on the material information', function 
         ->assertSee('Bergamot')
         ->assertDontSee('Lavender');
 });
+
+it('shows a clear button only when a query is present', function () {
+    getAs($this->user, '/materials')
+        ->assertOk()
+        ->assertDontsee('aria-label="Clear search"', false);
+
+    getAs($this->user, '/materials?query=lav')
+        ->assertOk()
+        ->assertSee('aria-label="Clear search"', false);
+});
