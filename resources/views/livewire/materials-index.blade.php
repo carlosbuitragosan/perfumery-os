@@ -15,7 +15,8 @@
          spellcheck="false"
          enterkeyhint="search"
       />
-      @if ($query !== '')
+
+      @if (filled($query))
          <button
             x-show="q !== ''"
             type="button"
@@ -46,11 +47,16 @@
    {{-- Materials list --}}
    <div class="divide-y divide-gray-800 card">
       @forelse ($materials as $m)
-         <a
-            href="{{ route('materials.edit', $m) }}"
-            class="block px-3 py-3 hover:bg-gray-800 focus:bg-gray-800 focus:outline-none"
+         <div
+            x-data
+            @click="window.location='{{ route('materials.show', $m) }}'"
+            class="px-3 py-3 hover:bg-gray-800 focus:bg-gray-800 focus:outline-none cursor-pointer rounded-md"
          >
-            <div>
+            {{-- Name links to material edit page --}}
+            <a
+               href="{{ route('materials.edit', $m) }}"
+               class="inline-block border border-gray-700 bg-gray-900/60 hover:bg-gray-900 rounded px-2 py-1 mb-2"
+            >
                <div class="font-medium text-gray-100">
                   {{ $m->name }}
                </div>
@@ -59,7 +65,7 @@
                      {{ $m->botanical }}
                   @endif
                </div>
-            </div>
+            </a>
 
             {{-- Tags --}}
             @php
@@ -120,10 +126,11 @@
                   {{ $m->notes }}
                @endif
             </div>
-         </a>
+         </div>
       @empty
          <div class="p-3 text-gray-400">No materials found.</div>
       @endforelse
    </div>
+   {{-- Laravel pagination --}}
    <div>{{ $materials->withQueryString()->links() }}</div>
 </div>

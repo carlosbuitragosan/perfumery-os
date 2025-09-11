@@ -32,6 +32,10 @@ class Material extends Model
                 ->orWhereRaw('LOWER(COALESCE(botanical, "")) LIKE ?', ["%{$needle}%"])
                 ->orWhereRaw('LOWER(COALESCE(notes, "")) LIKE ?', ["%{$needle}%"]);
 
+            if (str_contains($needle, 'ifra')) {
+                $q->orWhereNotNull('ifra_max_pct');
+            }
+
             // JSON arrays — exact contains (when exact term) + partial fallback via JSON_EXTRACT
             $jsonLike = function ($col) use ($q, $needle) {
                 // exact (case-insensitive because we store lowercase tags)

@@ -14,17 +14,14 @@ Route::get('/dashboard', fn () => view('dashboard'))
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     // Profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/profile', 'edit')->name('profile.edit');
+        Route::patch('/profile', 'update')->name('profile.update');
+        Route::delete('/profile', 'destroy')->name('profile.destroy');
+    });
 
-    // Materials (temp)
-    Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
-    Route::get('/materials/create', [MaterialController::class, 'create'])->name('materials.create');
-    Route::get('materials/{material}/edit', [MaterialController::class, 'edit'])->name('materials.edit');
-    Route::patch('/materials/{material}', [MaterialController::class, 'update'])->name('materials.update');
-    Route::put('/materials/{material}', [MaterialController::class, 'update']);
-    Route::post('/materials', [MaterialController::class, 'store'])->name('materials.store');
+    // Materials
+    Route::resource('materials', MaterialController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
 });
 
 require __DIR__.'/auth.php';

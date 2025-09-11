@@ -1,8 +1,10 @@
 <?php
 
+use App\Livewire\MaterialsIndex;
 use App\Models\Material;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Symfony\Component\DomCrawler\Crawler;
 
 uses(RefreshDatabase::class)->in('Feature');
@@ -96,6 +98,17 @@ it('validates and creates a material via POST', function () {
     $this->assertDatabaseHas('materials', ['name' => 'Peppermint']);
 });
 
+it('shows a cancel link on the create material page that returns to index', function () {
+    $response = getAs($this->user, '/materials/create')->assertOk();
+    $indexUrl = route('materials.index');
+    $formAction = route('materials.store');
+    $crawler = crawl($response);
+    $cancelLink = $crawler->filter('form[action="'.$formAction.'"] a[href="'.$indexUrl.'"]');
+    $label = trim($cancelLink->text());
+
+    expect(strtolower($label))->toContain('cancel');
+});
+
 it('persists botanical when provided', function () {
     postAs($this->user, '/materials', materialPayload())
         ->assertRedirect('/materials');
@@ -141,7 +154,7 @@ it('updates a material and redirects', function () {
 
     patchAs($this->user, route('materials.update', $material), materialPayload([
         'name' => 'Lavendola',
-    ]))->assertRedirect('/materials');
+    ]))->assertRedirectToRoute('materials.index');
 
     $this->assertDatabaseHas('materials', [
         'id' => $material->id,
@@ -149,6 +162,24 @@ it('updates a material and redirects', function () {
         'botanical' => 'Lavandula Angustifolia',
         'notes' => 'test',
     ]);
+});
+
+it('shows a cancel link on the edit page that returns to the index', function () {
+    $material = makeMaterial();
+    // visit the edit page
+    $response = getAs($this->user, route('materials.edit', $material))->assertOk();
+    // build url for the edit form
+    $formAction = route('materials.update', $material);
+    // build url for the materials index page
+    $indexUrl = route('materials.index');
+    // turn html response into a DomCrawler object
+    $crawler = crawl($response);
+    // find the cancel link (inside the form)
+    $cancelLink = $crawler->filter('form[action="'.$formAction.'"] a[href="'.$indexUrl.'"]');
+    // grag the visible text of that link
+    $label = trim($cancelLink->text());
+
+    expect(strtolower($label))->toContain('cancel');
 });
 
 it('saves pyramid tiers for a material', function () {
@@ -383,4 +414,37 @@ it('shows a clear button only when a query is present', function () {
     getAs($this->user, '/materials?query=lav')
         ->assertOk()
         ->assertSee('aria-label="Clear search"', false);
+});
+
+it('clears the query and input when clicking the clear button', function () {
+    Livewire::test(MaterialsIndex::class, ['query' => 'lav'])
+        ->assertSee('query', 'lav')
+        ->assertSee('aria-label="Clear search"', false)
+        ->set('query', '')
+        ->assertSet('query', '')
+        ->assertDontSee('aria-label="Clear search"', false);
+});
+
+it('finds materials that have an IFRA tag when searching "ifra"', function () {
+    $hasIfra = makeMaterial(materialPayload([
+        'ifra_max_pct' => 1.0,
+    ]));
+
+    $noIfra = makeMaterial(materialPayload([
+        'name' => 'Cedar',
+        'ifra_max_pct' => null,
+    ]));
+
+    getAs($this->user, '/materials?query=ifra')
+        ->assertOk()
+        ->assertSee('Lavender')
+        ->assertDontSee('Cedar');
+});
+
+it('links each material on the index to its show page', function () {
+    $material = (makeMaterial());
+
+    getAs($this->user, '/materials')
+        ->assertOk()
+        ->assertSee(e(route('materials.show', $material)), false);
 });
