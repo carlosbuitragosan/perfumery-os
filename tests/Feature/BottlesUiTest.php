@@ -19,3 +19,8 @@ it('shows a "add" button on the material show page linking to the create form', 
     $response->assertSee($createUrl, false);
     $response->assertSee('ADD');
 });
+it('shows the create bottle form for a material', function () {
+    $material = makeMaterial();
+    $response = getAs($this->user, route('materials.bottles.create', $material))->assertOk();
+    $response->assertSee('Create Bottle');
+});

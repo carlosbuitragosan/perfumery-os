@@ -55,12 +55,12 @@
             {{-- Name links to material edit page --}}
             <a
                href="{{ route('materials.edit', $m) }}"
-               class="inline-block border border-gray-700 bg-gray-900/60 hover:bg-gray-900 rounded px-2 py-1 mb-2"
+               class="inline-block bg-gray-700 hover:bg-gray-900 rounded px-2 py-1 mb-2"
             >
                <div class="font-medium text-gray-100">
                   {{ $m->name }}
                </div>
-               <div class="text-sm text-gray-400 mb-1">
+               <div class="text-xs mb-1">
                   @if ($m->botanical)
                      {{ $m->botanical }}
                   @endif

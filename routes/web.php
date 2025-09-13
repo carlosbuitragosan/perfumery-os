@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BottleController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
