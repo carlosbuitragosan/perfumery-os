@@ -52,3 +52,14 @@ it('shows the bottle create form with all fields', function () {
     expect($files->count())->toBe(1, 'Missing input[type="file"][name="files[]"]');
     expect($files->attr('multiple'))->not->toBeNull('files[] input should have the "multiple" attribute');
 });
+
+it('shows a cancel button in the bottle create form to go back to the specific material', function () {
+    $material = makeMaterial();
+    $response = getAs($this->user, route('materials.bottles.create', $material))->assertOk();
+    $crawler = crawl($response);
+
+    $cancelLink = $crawler->filter('a:contains("CANCEL")');
+    expect($cancelLink->count())->toBe(1, 'Missing cancel button/link');
+    expect($cancelLink->attr('href'))->toBe(route('materials.show', $material));
+
+});

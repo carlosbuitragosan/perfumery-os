@@ -59,7 +59,7 @@
 
          <label class="block">
             <span class="text-sm">Price</span>
-            <input type="number" name="price" class="p-2 w-full" />
+            <input type="number" name="price" inputmode="decimal" class="p-2 w-full" />
          </label>
 
          <label class="block">
@@ -68,7 +68,6 @@
          </label>
 
          <label class="block">
-            <span class="text-sm">Files</span>
             <input
                type="file"
                name="files[]"
@@ -77,9 +76,17 @@
             />
          </label>
 
-         <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">
-            SAVE
-         </x-primary-button>
+         <div class="flex gap-2">
+            <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">
+               SAVE
+            </x-primary-button>
+            <a
+               href="{{ route('materials.show', $material) }}"
+               class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-sm font-semibold"
+            >
+               CANCEL
+            </a>
+         </div>
       </form>
    </div>
 </x-app-layout>
