@@ -43,6 +43,7 @@ it('shows the bottle create form with all fields', function () {
     $assertInput('input[name="origin_country"]');
     $assertInput('input[name="distillation_date"]');
     $assertInput('input[name="purchase_date"]');
+    $assertInput('input[name="density"]');
     $assertInput('input[name="volume_ml"]');
     $assertInput('input[name="price"]');
     $assertInput('textarea[name="notes"]');
