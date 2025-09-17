@@ -49,12 +49,12 @@
 
          <label class="block">
             <span class="text-sm">Volume (ml)</span>
-            <input type="number" name="volume_ml" class="p-2 w-full" />
+            <input type="number" name="volume_ml" inputmode="numeric" class="p-2 w-full" />
          </label>
 
          <label class="block">
             <span class="text-sm">Density (g/ml)</span>
-            <input type="number" name="density" class="p-2 w-full" />
+            <input type="number" name="density" inputmode="decimal" class="p-2 w-full" />
          </label>
 
          <label class="block">
