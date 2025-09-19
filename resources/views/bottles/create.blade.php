@@ -4,67 +4,136 @@
       <span class="text-sm">{{ $material->name }}</span>
    </x-slot>
    <div class="p-4 space-y-4">
-      <form action="#" method="POST" enctype="multipart/form-data" class="space-y-3">
+      <form
+         method="POST"
+         action="{{ route('materials.bottles.store', $material) }}"
+         enctype="multipart/form-data"
+         class="space-y-3"
+      >
          @csrf
 
          <label class="block">
             <span class="text-sm">Supplier name</span>
-            <input type="text" name="supplier_name" class="p-2 w-full" />
+            <input
+               type="text"
+               name="supplier_name"
+               class="p-2 w-full"
+               value="{{ old('suplier_name') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Supplier URL</span>
-            <input type="url" name="supplier_url" class="p-2 w-full" />
+            <input
+               type="url"
+               name="supplier_url"
+               class="p-2 w-full"
+               value="{{ old('supplier_url') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Batch code</span>
-            <input type="text" name="batch_code" class="p-2 w-full" />
+            <input
+               type="text"
+               name="batch_code"
+               class="p-2 w-full"
+               value="{{ old('batch_code') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Method</span>
-            <select name="method" class="p-2 w-full"></select>
+            <select name="method" class="p-2 w-full">
+               <option value="" disabled {{ old('method') ? '' : 'selected' }}>
+                  Chose method...
+               </option>
+               @foreach (\App\Enums\ExtractionMethod::cases() as $m)
+                  <option value="{{ $m->value }}" @selected(old('method') === $m->value)>
+                     {{ $m->label() }}
+                  </option>
+               @endforeach
+            </select>
          </label>
 
          <label class="block">
             <span class="text-sm">Plant part</span>
-            <input type="text" name="plant_part" class="p-2 w-full" />
+            <input
+               type="text"
+               name="plant_part"
+               class="p-2 w-full"
+               value="{{ old('plant_part') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Origin country</span>
-            <input type="text" name="origin_country" class="p-2 w-full" />
+            <input
+               type="text"
+               name="origin_country"
+               class="p-2 w-full"
+               value="{{ old('origin_country') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Distillation Date</span>
-            <input type="date" name="distillation_date" class="p-2 w-full" />
+            <input
+               type="date"
+               name="distillation_date"
+               class="p-2 w-full"
+               value="{{ old('distillation_date') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Purchase Date</span>
-            <input type="date" name="purchase_date" class="p-2 w-full" />
+            <input
+               type="date"
+               name="purchase_date"
+               class="p-2 w-full"
+               value="{{ old('purchase_date') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Volume (ml)</span>
-            <input type="number" name="volume_ml" inputmode="numeric" class="p-2 w-full" />
+            <input
+               type="number"
+               name="volume_ml"
+               inputmode="numeric"
+               class="p-2 w-full"
+               value="{{ old('volume_ml') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Density (g/ml)</span>
-            <input type="number" name="density" inputmode="decimal" class="p-2 w-full" />
+            <input
+               type="number"
+               name="density"
+               inputmode="decimal"
+               step="0.001"
+               class="p-2 w-full"
+               value="{{ old('density') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Price</span>
-            <input type="number" name="price" inputmode="decimal" class="p-2 w-full" />
+            <input
+               type="number"
+               name="price"
+               inputmode="decimal"
+               step="0.01"
+               class="p-2 w-full"
+               value="{{ old('price') }}"
+            />
          </label>
 
          <label class="block">
             <span class="text-sm">Notes</span>
-            <textarea name="notes" rows="4" class="p-2 w-full"></textarea>
+            <textarea name="notes" rows="4" class="p-2 w-full"> {{ old('notes') }}</textarea>
          </label>
 
          <label class="block">

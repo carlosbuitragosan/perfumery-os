@@ -6,7 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
 {
-    protected $fillable = ['name', 'botanical', 'pyramid', 'families', 'functions', 'safety', 'effects', 'ifra_max_pct', 'notes'];
+    protected $fillable = ['name',
+        'botanical',
+        'pyramid',
+        'families',
+        'functions',
+        'safety',
+        'effects',
+        'ifra_max_pct',
+        'notes',
+    ];
 
     protected $casts = [
         'pyramid' => 'array',
@@ -50,5 +59,10 @@ class Material extends Model
             $jsonLike('effects');
             $jsonLike('safety');
         });
+    }
+
+    public function bottles()
+    {
+        return $this->hasMany(Bottle::class);
     }
 }

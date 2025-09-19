@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Bottle;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -19,6 +20,7 @@ it('shows a "add" button on the material show page linking to the create form', 
     $response->assertSee($createUrl, false);
     $response->assertSee('ADD');
 });
+
 it('shows the create bottle form for a material', function () {
     $material = makeMaterial();
     $response = getAs($this->user, route('materials.bottles.create', $material))->assertOk();
@@ -62,4 +64,31 @@ it('shows a cancel button in the bottle create form to go back to the specific m
     expect($cancelLink->count())->toBe(1, 'Missing cancel button/link');
     expect($cancelLink->attr('href'))->toBe(route('materials.show', $material));
 
+});
+
+it('creates a bottle for the material on form submit', function () {
+    $material = makeMaterial();
+    $payload = [
+        'supplier_name' => 'Eden Botanicals',
+        'supplier_url' => 'https://example.com',
+        'batch_code' => 'AB123',
+        'method' => 'steam_distilled',
+        'plant_part' => 'wood',
+        'origin_country' => 'Pakistan',
+        'distillation_date' => '2024-01-23',
+        'purchase_date' => '2025-01-01',
+        'density' => '0.934',
+        'volume_ml' => '10',
+        'price' => '10.99',
+        'notes' => 'possibly synthetic',
+    ];
+
+    $response = postAs($this->user, route('materials.bottles.store', $material), $payload);
+    $response->assertSessionHasNoErrors();
+    $response->assertRedirect(route('materials.show', $material));
+
+    expect(Bottle::query()->where([
+        'material_id' => $material->id,
+        'batch_code' => 'AB123',
+    ])->exists())->toBeTrue();
 });

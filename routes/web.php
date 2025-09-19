@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('materials', MaterialController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
 
     // bottles
-    Route::resource('materials.bottles', BottleController::class)->only(['create']);
+    Route::resource('materials.bottles', BottleController::class)->only(['create', 'store']);
 });
 
 require __DIR__.'/auth.php';
