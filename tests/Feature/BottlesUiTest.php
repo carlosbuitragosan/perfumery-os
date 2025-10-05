@@ -92,3 +92,40 @@ it('creates a bottle for the material on form submit', function () {
         'batch_code' => 'AB123',
     ])->exists())->toBeTrue();
 });
+
+it('shows the material bottles on the material show page', function () {
+    $material = makeMaterial();
+
+    $bottle = $material->bottles()->create([
+        'supplier_name' => 'Eden Botanicals',
+        'supplier_url' => 'http://www.edenbotanicals.com',
+        'batch_code' => 'AB1234',
+        'method' => 'steam_distilled',
+        'plant_part' => 'leaves',
+        'origin_country' => 'Morocco',
+        'distillation_date' => '2021-01-30',
+        'purchase_date' => '2025-03-01',
+        'volume_ml' => 10,
+        'density' => 0.912,
+        'price' => 4.99,
+        'notes' => 'test notes',
+        'is_active' => true,
+    ]);
+
+    $response = getAs($this->user, route('materials.show', $material))->assertOk();
+    $crawler = crawl($response);
+
+    expect($response->getContent())->toContain('Eden Botanicals');
+    expect($response->getContent())->toContain('http://www.edenbotanicals.com');
+    expect($response->getContent())->toContain('AB1234');
+    expect($response->getContent())->toContain('Steam distilled');
+    expect($response->getContent())->toContain('leaves');
+    expect($response->getContent())->toContain('Morocco');
+    expect($response->getContent())->toContain('30/01/2021');
+    expect($response->getContent())->toContain('01/03/2025');
+    expect($response->getContent())->toContain('10');
+    expect($response->getContent())->toContain('0.912');
+    expect($response->getContent())->toContain('4.99');
+    expect($response->getContent())->toContain('test notes');
+    expect($response->getContent())->toContain('In use');
+});

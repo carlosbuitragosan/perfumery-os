@@ -44,7 +44,7 @@
 
          <label class="block">
             <span class="text-sm">Method</span>
-            <select name="method" class="p-2 w-full">
+            <select name="method" class="p-2 w-full" required>
                <option value="" disabled {{ old('method') ? '' : 'selected' }}>
                   Chose method...
                </option>
