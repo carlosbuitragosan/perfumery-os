@@ -96,6 +96,17 @@
                   <span class="font-medium">Notes:</span>
                   {{ $bottle->notes }}
                </div>
+               @if ($bottle->is_active)
+                  <form method="POST" action="{{ route('bottles.finish', $bottle) }}">
+                     @csrf
+                     <button
+                        type="submit"
+                        class="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
+                     >
+                        MARK AS FINISHED
+                     </button>
+                  </form>
+               @endif
             </div>
          @empty
             <div class="card p-4">

@@ -129,3 +129,21 @@ it('shows the material bottles on the material show page', function () {
     expect($response->getContent())->toContain('test notes');
     expect($response->getContent())->toContain('In use');
 });
+
+it('marks a bottle as finished from the material show page', function () {
+    $material = makeMaterial();
+    $bottle = $material->bottles()->create([
+        'supplier_name' => 'test supplier',
+        'method' => 'steam_distilled',
+    ]);
+
+    $response = postAs($this->user, route('bottles.finish', $bottle));
+    $response->assertRedirect(route('materials.show', $material));
+
+    $bottle->refresh();
+    expect($bottle->is_active)->toBeFalse();
+
+    $page = getAs($this->user, route('materials.show', $material))->assertOk();
+    expect($page->getContent())->toContain('Finished');
+    expect($page->getContent())->not->toContain('In use');
+});

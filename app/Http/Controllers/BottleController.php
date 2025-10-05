@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ExtractionMethod;
+use App\Models\Bottle;
 use App\Models\Material;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum as EnumRule;
@@ -34,5 +35,13 @@ class BottleController extends Controller
         $material->bottles()->create($data);
 
         return redirect()->route('materials.show', $material);
+    }
+
+    public function finish(Bottle $bottle)
+    {
+        $bottle->is_active = false;
+        $bottle->save();
+
+        return redirect()->route('materials.show', $bottle->material_id);
     }
 }

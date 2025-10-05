@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Bottle extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'supplier_name',
         'supplier_url',
@@ -21,8 +24,12 @@ class Bottle extends Model
         'notes',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     public function material()
     {
-        $this->belongsTo(Material::class);
+        return $this->belongsTo(Material::class);
     }
 }
