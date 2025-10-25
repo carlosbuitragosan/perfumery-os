@@ -131,6 +131,4 @@
          <div class="p-3 text-gray-400">No materials found.</div>
       @endforelse
    </div>
-   {{-- Laravel pagination --}}
-   <div>{{ $materials->withQueryString()->links() }}</div>
 </div>

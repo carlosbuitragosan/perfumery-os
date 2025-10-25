@@ -383,3 +383,18 @@ it('links each material on the index to its show page', function () {
         ->assertOk()
         ->assertSee(e(route('materials.show', $material)), false);
 });
+
+it('shows all materials without pagination', function () {
+    for ($i = 1; $i <= 30; $i++) {
+        makeMaterial(['name' => "Material {$i}"]);
+    }
+
+    $response = Livewire::test(\App\Livewire\MaterialsIndex::class)
+        ->assertStatus(200);
+
+    $html = $response->html();
+
+    expect($html)->toContain('Material 20');
+    expect($html)->toContain('Material 29');
+    expect($html)->not->toContain('Next');
+});

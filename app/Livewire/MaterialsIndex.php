@@ -23,7 +23,7 @@ class MaterialsIndex extends Component
     {
         $materials = Material::search($this->query)
             ->orderBy('name')
-            ->paginate(20);
+            ->get();
 
         return view('livewire.materials-index', compact('materials'));
     }
