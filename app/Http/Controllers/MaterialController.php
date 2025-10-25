@@ -100,7 +100,8 @@ class MaterialController extends Controller
         }
         $material->update($data);
 
-        return redirect()->route('materials.index')->with('ok', 'Material updated');
+        return redirect(route('materials.index').'#material-'.$material->id)
+            ->with('ok', 'Material updated');
     }
 
     // material show page

@@ -87,9 +87,13 @@ it('links each material on the index to its edit page', function () {
 it('updates a material and redirects', function () {
     $material = makeMaterial();
 
-    patchAs($this->user, route('materials.update', $material), materialPayload([
+    $response = patchAs($this->user, route('materials.update', $material), materialPayload([
         'name' => 'Lavendola',
-    ]))->assertRedirectToRoute('materials.index');
+    ]));
+
+    $expectedUrl = route('materials.index').'#material-'.$material->id;
+
+    $response->assertRedirect($expectedUrl);
 
     $this->assertDatabaseHas('materials', [
         'id' => $material->id,
@@ -142,11 +146,14 @@ it('shows pyramid tier inputs on the create form', function () {
 it('updates pyramid values for a material', function () {
     $material = makeMaterial();
 
-    patchAs($this->user, route('materials.update', $material), materialPayload([
+    $response = patchAs($this->user, route('materials.update', $material), materialPayload([
         'name' => 'Lavender',
         'pyramid' => ['top', 'heart'],
-    ]))
-        ->assertRedirect('/materials');
+    ]));
+
+    $expectedUrl = route('materials.index').'#material-'.$material->id;
+
+    $response->assertRedirect($expectedUrl);
 
     $this->assertDatabaseHas('materials', [
         'id' => $material->id,
@@ -389,7 +396,7 @@ it('shows all materials without pagination', function () {
         makeMaterial(['name' => "Material {$i}"]);
     }
 
-    $response = Livewire::test(\App\Livewire\MaterialsIndex::class)
+    $response = Livewire::test(MaterialsIndex::class)
         ->assertStatus(200);
 
     $html = $response->html();
@@ -397,4 +404,21 @@ it('shows all materials without pagination', function () {
     expect($html)->toContain('Material 20');
     expect($html)->toContain('Material 29');
     expect($html)->not->toContain('Next');
+});
+
+it('redirects back to the material list anchored to the updated material', function () {
+    $material = makeMaterial(['name' => 'Jasmine']);
+    $payload = ['name' => 'Lavender'];
+
+    $response = patchAs($this->user, route('materials.update', $material), $payload);
+
+    $expectedUrl = route('materials.index').'#material-'.$material->id;
+
+    $response->assertRedirect($expectedUrl);
+
+    $html = Livewire::test(MaterialsIndex::class)
+        ->assertStatus(200)
+        ->html();
+
+    expect($html)->toContain('id="material-'.$material->id.'"');
 });

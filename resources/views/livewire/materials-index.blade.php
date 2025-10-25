@@ -48,6 +48,7 @@
    <div class="divide-y divide-gray-800 card">
       @forelse ($materials as $m)
          <div
+            id="material-{{ $m->id }}"
             x-data
             @click="window.location='{{ route('materials.show', $m) }}'"
             class="px-3 py-3 hover:bg-gray-800 focus:bg-gray-800 focus:outline-none cursor-pointer rounded-md"
