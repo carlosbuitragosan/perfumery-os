@@ -63,6 +63,6 @@ class Material extends Model
 
     public function bottles()
     {
-        return $this->hasMany(Bottle::class);
+        return $this->hasMany(Bottle::class)->latest();
     }
 }

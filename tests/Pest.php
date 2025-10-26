@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Bottle;
 use App\Models\Material;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,17 +15,48 @@ uses(RefreshDatabase::class)->in('Feature');
 // Default payload for creating/updating a material
 function materialPayload(array $overrides = []): array
 {
-    return array_merge([
+    $base = [
         'name' => 'Lavender',
         'botanical' => 'Lavandula Angustifolia',
         'notes' => 'test',
         'pyramid' => ['top', 'heart'],
-    ], $overrides);
+    ];
+
+    return array_merge($base, $overrides);
 }
 
+// create a new material
 function makeMaterial(array $overrides = []): Material
 {
     return Material::create(materialPayload($overrides));
+}
+
+// default payload for creating/updating a bottle
+function bottlePayload(array $overrides = []): array
+{
+    $base = [
+        'supplier_name' => 'Eden Botanicals',
+        'supplier_url' => 'http://www.edenbotanicals.com',
+        'batch_code' => 'AB1234',
+        'method' => 'steam_distilled',
+        'plant_part' => 'leaves',
+        'origin_country' => 'Morocco',
+        'distillation_date' => '2021-01-30',
+        'purchase_date' => '2025-03-01',
+        'volume_ml' => 10,
+        'density' => 0.912,
+        'price' => 4.99,
+        'notes' => 'test notes',
+        'is_active' => true,
+    ];
+
+    return array_merge($base, $overrides);
+}
+
+// createa new bottle
+function makeBottle(Material $material, array $overrides = []): Bottle
+{
+    return $material->bottles()->create(bottlePayload($overrides));
 }
 
 // Act as user and GET/POST/PATCH

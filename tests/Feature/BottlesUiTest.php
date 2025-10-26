@@ -68,20 +68,8 @@ it('shows a cancel button in the bottle create form to go back to the specific m
 
 it('creates a bottle for the material on form submit', function () {
     $material = makeMaterial();
-    $payload = [
-        'supplier_name' => 'Eden Botanicals',
-        'supplier_url' => 'https://example.com',
-        'batch_code' => 'AB123',
-        'method' => 'steam_distilled',
-        'plant_part' => 'wood',
-        'origin_country' => 'Pakistan',
-        'distillation_date' => '2024-01-23',
-        'purchase_date' => '2025-01-01',
-        'density' => '0.934',
-        'volume_ml' => '10',
-        'price' => '10.99',
-        'notes' => 'possibly synthetic',
-    ];
+
+    $payload = bottlePayload(['batch_code' => 'AB123']);
 
     $response = postAs($this->user, route('materials.bottles.store', $material), $payload);
     $response->assertSessionHasNoErrors();
@@ -96,23 +84,10 @@ it('creates a bottle for the material on form submit', function () {
 it('shows the material bottles on the material show page', function () {
     $material = makeMaterial();
 
-    $bottle = $material->bottles()->create([
-        'supplier_name' => 'Eden Botanicals',
-        'supplier_url' => 'http://www.edenbotanicals.com',
-        'batch_code' => 'AB1234',
-        'method' => 'steam_distilled',
-        'plant_part' => 'leaves',
-        'origin_country' => 'Morocco',
-        'distillation_date' => '2021-01-30',
-        'purchase_date' => '2025-03-01',
-        'volume_ml' => 10,
-        'density' => 0.912,
-        'price' => 4.99,
-        'notes' => 'test notes',
-        'is_active' => true,
-    ]);
+    $bottle = makeBottle($material, bottlePayload());
 
-    $response = getAs($this->user, route('materials.show', $material))->assertOk();
+    $response = getAs($this->user, route('materials.show', $material))
+        ->assertOk();
     $crawler = crawl($response);
 
     expect($response->getContent())->toContain('Eden Botanicals');
@@ -132,7 +107,7 @@ it('shows the material bottles on the material show page', function () {
 
 it('marks a bottle as finished from the material show page', function () {
     $material = makeMaterial();
-    $bottle = $material->bottles()->create([
+    $bottle = makeBottle($material, [
         'supplier_name' => 'test supplier',
         'method' => 'steam_distilled',
     ]);
@@ -146,4 +121,27 @@ it('marks a bottle as finished from the material show page', function () {
     $page = getAs($this->user, route('materials.show', $material))->assertOk();
     expect($page->getContent())->toContain('Finished');
     expect($page->getContent())->not->toContain('In use');
+});
+
+it('shows newest bottles first on the material show page', function () {
+    $material = makeMaterial(['name' => 'bergamot']);
+
+    $older = makeBottle($material, ['batch_code' => 'old']);
+    // manually force timestamps to yesterday
+    $older->created_at = now()->subDay();
+    $older->updated_at = now()->subDay();
+    $older->save();
+
+    $newer = makeBottle($material, ['batch_code' => 'new']);
+
+    $response = getAs($this->user, route('materials.show', $material))
+        ->assertOk();
+    $html = $response->getContent();
+
+    $posNewer = strpos($html, 'new');
+    $posOlder = strpos($html, 'old');
+
+    expect($posNewer)->not->toBeFalse();
+    expect($posOlder)->not->toBeFalse();
+    expect($posNewer)->toBeLessThan($posOlder, 'Newest bottle should appear before the older bottle');
 });
