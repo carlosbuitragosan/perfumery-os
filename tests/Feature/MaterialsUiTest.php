@@ -435,3 +435,23 @@ it('the cancel link on edit material form returns to the anchored material posit
 
     expect($html)->toContain('href="'.$expectedHref.'"');
 });
+
+it('shows the newly added family descriptors in the material create form', function () {
+    $response = getAs($this->user, route('materials.create'))
+        ->assertOk();
+    $crawler = crawl($response);
+
+    // helper to check each value
+    $assertFamilyCheckbox = function (string $value) use ($crawler) {
+        $selector = 'input[type="checkbox"][name="families[]"][value="'.$value.'"]';
+
+        expect($crawler->filter($selector)->count())
+            ->toBeGreaterThan(0, "Missing checkbox for family '{$value}'");
+    };
+
+    $assertFamilyCheckbox('creamy');
+    $assertFamilyCheckbox('earthy');
+    $assertFamilyCheckbox('powdery');
+    $assertFamilyCheckbox('musky');
+    $assertFamilyCheckbox('camphorous');
+});

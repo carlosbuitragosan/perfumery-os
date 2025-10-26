@@ -1,6 +1,6 @@
 <?php
 
-$families = ['citrus', 'floral', 'herbaceous', 'woody', 'resinous', 'spicy', 'green', 'fruity', 'balsamic', 'animalic', 'gourmand', 'leathery', 'smoky', 'marine', 'sweet'];
+$families = ['citrus', 'floral', 'herbaceous', 'woody', 'resinous', 'spicy', 'green', 'fruity', 'balsamic', 'animalic', 'gourmand', 'leathery', 'smoky', 'marine', 'sweet', 'creamy', 'earthy', 'powdery', 'musky', 'camphorous'];
 $functions = ['fixative', 'modifier'];
 $safety = ['phototoxic', 'toxic', 'irritant', 'allergenic', 'sensitizer'];
 $effects = ['calming', 'focus', 'uplifting', 'grounding', 'sedative', 'aphrodisiac', 'stimulant'];
