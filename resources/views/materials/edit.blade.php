@@ -189,7 +189,7 @@
                SAVE
             </x-primary-button>
             <a
-               href="{{ route('materials.index') }}"
+               href="{{ route('materials.index') }}#material-{{ $material->id }}"
                class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-sm font-semibold"
             >
                CANCEL

@@ -114,7 +114,7 @@ it('shows a cancel link on the edit page that returns to the index', function ()
     // turn html response into a DomCrawler object
     $crawler = crawl($response);
     // find the cancel link (inside the form)
-    $cancelLink = $crawler->filter('form[action="'.$formAction.'"] a[href="'.$indexUrl.'"]');
+    $cancelLink = $crawler->filter('form[action="'.$formAction.'"] a[href="'.$indexUrl.'#material-'.$material->id.'"]');
     // grag the visible text of that link
     $label = trim($cancelLink->text());
 
@@ -406,7 +406,7 @@ it('shows all materials without pagination', function () {
     expect($html)->not->toContain('Next');
 });
 
-it('redirects back to the material list anchored to the updated material', function () {
+it('editing a material redirects back to the material list anchored to the updated material', function () {
     $material = makeMaterial(['name' => 'Jasmine']);
     $payload = ['name' => 'Lavender'];
 
@@ -421,4 +421,17 @@ it('redirects back to the material list anchored to the updated material', funct
         ->html();
 
     expect($html)->toContain('id="material-'.$material->id.'"');
+});
+
+it('the cancel link on edit material form returns to the anchored material position', function () {
+    $material = makeMaterial(['name' => 'Bergamot']);
+
+    $response = getAs($this->user, route('materials.edit', $material))
+        ->assertOk();
+
+    $html = $response->getContent();
+
+    $expectedHref = route('materials.index').'#material-'.$material->id;
+
+    expect($html)->toContain('href="'.$expectedHref.'"');
 });
