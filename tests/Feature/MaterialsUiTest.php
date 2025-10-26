@@ -455,3 +455,17 @@ it('shows the newly added family descriptors in the material create form', funct
     $assertFamilyCheckbox('musky');
     $assertFamilyCheckbox('camphorous');
 });
+
+it('allows saving new family descriptors on material create', function () {
+    $payload = materialPayload([
+        'name' => 'my oil',
+        'families' => ['creamy', 'camphorous', 'musky', 'earthy'],
+    ]);
+
+    $response = postAs($this->user, route('materials.store'), $payload)
+        ->assertRedirect();
+
+    $material = Material::where('name', $payload['name'])->first();
+
+    expect($material->families)->toEqualCanonicalizing(['creamy', 'camphorous', 'musky', 'earthy']);
+});
