@@ -27,8 +27,10 @@ Route::middleware('auth')->group(function () {
     // bottles
     Route::resource('materials.bottles', BottleController::class)->only(['create', 'store']);
 
-    // update bottle
+    // update bottle to finished
     Route::post('/bottles/{bottle}/finish', [BottleController::class, 'finish'])->name('bottles.finish');
+    // edit bottle
+    Route::get('/bottles/{bottle}/edit', [BottleController::class, 'edit'])->name('bottles.edit');
 });
 
 require __DIR__.'/auth.php';

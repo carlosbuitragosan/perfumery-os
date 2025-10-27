@@ -37,6 +37,11 @@ class BottleController extends Controller
         return redirect()->route('materials.show', $material);
     }
 
+    public function edit(Bottle $bottle)
+    {
+        return view('bottles.edit', compact('bottle'));
+    }
+
     public function finish(Bottle $bottle)
     {
         $bottle->is_active = false;

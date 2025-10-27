@@ -31,7 +31,7 @@
    <body>
       <div>
          <h1>We’ll be back soon!</h1>
-         <p>The site is currently under maintenance. Please check back in a few minutes.</p>
+         <p>The site is currently under maintenance. Please check back in a few moments.</p>
       </div>
    </body>
 </html>

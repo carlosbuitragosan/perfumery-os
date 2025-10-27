@@ -145,3 +145,22 @@ it('shows newest bottles first on the material show page', function () {
     expect($posOlder)->not->toBeFalse();
     expect($posNewer)->toBeLessThan($posOlder, 'Newest bottle should appear before the older bottle');
 });
+
+it('shows an edit button that links to edit bottle page', function () {
+    $material = makeMaterial();
+    $bottle = makeBottle($material);
+
+    $response = getAs($this->user, route('materials.show', $material))
+        ->assertOk();
+
+    $crawler = crawl($response);
+
+    $editUrl = route('bottles.edit', $bottle);
+
+    $link = $crawler->filter('a:contains("EDIT")')
+        ->reduce(function ($node) use ($editUrl) {
+            return $node->attr('href') === $editUrl;
+        });
+
+    expect($link->count())->toBeGreaterThan(0, "Missing edit link for bottle {$bottle->id}");
+});

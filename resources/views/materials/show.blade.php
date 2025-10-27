@@ -51,7 +51,9 @@
                @if ($bottle->supplier_url)
                   <div>
                      <span class="font-medium">URL:</span>
-                     <a href="{{ $bottle->supplier_url }}">{{ $bottle->supplier_url }}</a>
+                     <a href="{{ $bottle->supplier_url }}" class="underline">
+                        {{ $bottle->supplier_url }}
+                     </a>
                   </div>
                @endif
 
@@ -101,12 +103,21 @@
                      @csrf
                      <button
                         type="submit"
-                        class="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
+                        class="py-2 rounded bg-transparent text-red-600 underline text-xs font-semibold"
                      >
                         MARK AS FINISHED
                      </button>
                   </form>
                @endif
+
+               <div class="flex gap-2 justify-end">
+                  <x-link
+                     href="{{ route('bottles.edit', $bottle) }} "
+                     class="text-sm bg-green-600 hover:bg-green-700"
+                  >
+                     EDIT
+                  </x-link>
+               </div>
             </div>
          @empty
             <div class="card p-4">
