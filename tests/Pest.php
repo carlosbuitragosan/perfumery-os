@@ -65,11 +65,13 @@ function getAs(User $user, string $uri)
     return test()->actingAs($user)->get($uri);
 }
 
+// creates a post
 function postAs(User $user, string $uri, array $data = [])
 {
     return test()->actingAs($user)->post($uri, $data);
 }
 
+// creates an update
 function patchAs(User $user, string $uri, array $data = [])
 {
     return test()->actingAs($user)->patch($uri, $data);

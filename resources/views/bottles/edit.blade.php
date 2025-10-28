@@ -150,7 +150,10 @@
             <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">
                SAVE
             </x-primary-button>
-            <a href="" class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-sm font-semibold">
+            <a
+               href="{{ route('materials.show', $bottle->material) }}#bottle-{{ $bottle->id }}"
+               class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-sm font-semibold"
+            >
                CANCEL
             </a>
          </div>

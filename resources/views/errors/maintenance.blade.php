@@ -16,6 +16,7 @@
             display: flex;
             height: 100vh;
             margin: 0;
+            padding: 1rem;
             align-items: center;
             justify-content: center;
             font-family: system-ui, sans-serif;

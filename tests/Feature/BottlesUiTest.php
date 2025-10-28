@@ -202,3 +202,21 @@ it('updates a bottle and redirects', function () {
         'price' => 200,
     ]);
 });
+
+it('shows a cancel link in the edit form that returns to the material show page anchored to that bottle', function () {
+    $material = makeMaterial();
+    $bottle = makeBottle($material);
+    $cancelUrl = route('materials.show', $material).'#bottle-'.$bottle->id;
+
+    $response = getAs($this->user, route('bottles.edit', $bottle))
+        ->assertOk();
+
+    $crawler = crawl($response);
+
+    $cancelLink = $crawler->filter('a:contains("CANCEL")')
+        ->reduce(function ($node) use ($cancelUrl) {
+            return $node->attr('href') === $cancelUrl;
+        });
+
+    expect($cancelLink->count())->toBe(1, "Missing link with href {$cancelUrl}");
+});
