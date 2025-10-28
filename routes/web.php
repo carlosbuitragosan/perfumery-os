@@ -35,6 +35,8 @@ Route::middleware('auth')->group(function () {
     // edit bottle
     Route::get('/bottles/{bottle}/edit', [BottleController::class, 'edit'])
         ->name('bottles.edit');
+    Route::patch('/bottles/{bottle}/update', [BottleController::class, 'update'])
+        ->name('bottles.update');
 });
 
 require __DIR__.'/auth.php';

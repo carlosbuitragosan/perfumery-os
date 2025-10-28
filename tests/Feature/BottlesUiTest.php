@@ -178,3 +178,27 @@ it('shows the edit form for a bottle', function () {
         // false = do not escape html
         ->assertSee('value="'.$bottle->price.'"', false);
 });
+
+it('updates a bottle and redirects', function () {
+    $material = makeMaterial();
+    $bottle = makeBottle($material);
+    $payload = bottlePayload([
+        'origin_country' => 'Colombia',
+        'plant_part' => 'flowers',
+        'price' => 200,
+    ]);
+
+    $response = patchAs($this->user, route('bottles.update', $bottle), $payload);
+    $expectedUrl = route('materials.show', $material).'#bottle-'.$bottle->id;
+
+    $response->assertRedirect($expectedUrl);
+
+    $this->assertDatabaseHas('bottles', [
+        'id' => $bottle->id,
+        'material_id' => $material->id,
+        'batch_code' => 'AB1234',
+        'origin_country' => 'Colombia',
+        'plant_part' => 'flowers',
+        'price' => 200,
+    ]);
+});
