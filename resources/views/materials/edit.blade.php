@@ -180,7 +180,7 @@
          <label class="block">
             <span class="text-sm">Notes</span>
             <textarea name="notes" rows="4" class="p-2 w-full">
-            {{ old('notes', $material->notes) }}</textarea
+{{ old('notes', $material->notes) }}</textarea
             >
          </label>
 

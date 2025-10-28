@@ -22,15 +22,19 @@ Route::middleware('auth')->group(function () {
     });
 
     // Materials
-    Route::resource('materials', MaterialController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
+    Route::resource('materials', MaterialController::class)
+        ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
 
     // bottles
-    Route::resource('materials.bottles', BottleController::class)->only(['create', 'store']);
+    Route::resource('materials.bottles', BottleController::class)
+        ->only(['create', 'store']);
 
     // update bottle to finished
-    Route::post('/bottles/{bottle}/finish', [BottleController::class, 'finish'])->name('bottles.finish');
+    Route::post('/bottles/{bottle}/finish', [BottleController::class, 'finish'])
+        ->name('bottles.finish');
     // edit bottle
-    Route::get('/bottles/{bottle}/edit', [BottleController::class, 'edit'])->name('bottles.edit');
+    Route::get('/bottles/{bottle}/edit', [BottleController::class, 'edit'])
+        ->name('bottles.edit');
 });
 
 require __DIR__.'/auth.php';

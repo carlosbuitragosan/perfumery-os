@@ -164,3 +164,17 @@ it('shows an edit button that links to edit bottle page', function () {
 
     expect($link->count())->toBeGreaterThan(0, "Missing edit link for bottle {$bottle->id}");
 });
+
+it('shows the edit form for a bottle', function () {
+    $material = makeMaterial();
+    $bottle = makeBottle($material);
+
+    $response = getAs($this->user, route('bottles.edit', $bottle))
+        ->assertOk()
+        ->assertSee($material->name)
+        ->assertSee('Edit Bottle')
+        ->assertSee('Eden Botanicals')
+        ->assertSee('Morocco')
+        // false = do not escape html
+        ->assertSee('value="'.$bottle->price.'"', false);
+});
