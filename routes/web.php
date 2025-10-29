@@ -9,34 +9,35 @@ Route::redirect('/', '/dashboard');
 
 // Dashboard
 Route::get('/dashboard', fn () => view('dashboard'))
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('dashboard');
 
 // Authenticated routes
-Route::middleware('auth')->group(function () {
-    // Profile
-    Route::controller(ProfileController::class)->group(function () {
-        Route::get('/profile', 'edit')->name('profile.edit');
-        Route::patch('/profile', 'update')->name('profile.update');
-        Route::delete('/profile', 'destroy')->name('profile.destroy');
+Route::middleware('auth')
+    ->group(function () {
+        // Profile
+        Route::controller(ProfileController::class)->group(function () {
+            Route::get('/profile', 'edit')->name('profile.edit');
+            Route::patch('/profile', 'update')->name('profile.update');
+            Route::delete('/profile', 'destroy')->name('profile.destroy');
+        });
+
+        // Materials
+        Route::resource('materials', MaterialController::class)
+            ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
+
+        // New bottle for a given material
+        Route::resource('materials.bottles', BottleController::class)
+            ->only(['create', 'store']);
+
+        // editing / finishing an existing bottle
+        Route::prefix('bottles/{bottle}')
+            ->controller(BottleController::class)
+            ->group(function () {
+                Route::get('/edit', 'edit')->name('bottles.edit');
+                Route::patch('/', 'update')->name('bottles.update');
+                Route::post('/finish', 'finish')->name('bottles.finish');
+            });
     });
-
-    // Materials
-    Route::resource('materials', MaterialController::class)
-        ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
-
-    // bottles
-    Route::resource('materials.bottles', BottleController::class)
-        ->only(['create', 'store']);
-
-    // update bottle to finished
-    Route::post('/bottles/{bottle}/finish', [BottleController::class, 'finish'])
-        ->name('bottles.finish');
-    // edit bottle
-    Route::get('/bottles/{bottle}/edit', [BottleController::class, 'edit'])
-        ->name('bottles.edit');
-    Route::patch('/bottles/{bottle}/update', [BottleController::class, 'update'])
-        ->name('bottles.update');
-});
 
 require __DIR__.'/auth.php';
