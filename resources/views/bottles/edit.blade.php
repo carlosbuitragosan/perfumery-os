@@ -4,7 +4,13 @@
       <span class="text-sm">{{ $bottle->material->name }}</span>
    </x-slot>
    <div class="p-4 space-y-4">
-      <form method="POST" action="" enctype="multipart/form-data" class="space-y-3">
+      <form
+         id="bottle-edit-form"
+         method="POST"
+         action="{{ route('bottles.update', $bottle) }}"
+         enctype="multipart/form-data"
+         class="space-y-3"
+      >
          @csrf
          @method('PATCH')
 

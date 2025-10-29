@@ -28,7 +28,7 @@
                $enum = ExtractionMethod::tryFrom((string) $bottle->method);
             @endphp
 
-            <div class="rounded border p-4 text-sm space-y-1">
+            <div class="rounded border p-4 text-sm space-y-1" id="bottle-{{ $bottle->id }}">
                <div class="flex items-center gap-2 mb-1">
                   @if ($bottle->is_active)
                      <span

@@ -220,3 +220,19 @@ it('shows a cancel link in the edit form that returns to the material show page 
 
     expect($cancelLink->count())->toBe(1, "Missing link with href {$cancelUrl}");
 });
+
+it('the bottle edit form posts to the bottle update route', function () {
+    $material = makeMaterial();
+    $bottle = makeBottle($material);
+    $updateUrl = route('bottles.update', $bottle);
+
+    $response = getAs($this->user, route('bottles.edit', $bottle))
+        ->assertOk();
+    $crawler = crawl($response);
+
+    $form = $crawler->filter('form#bottle-edit-form');
+    expect($form->filter('button[type="submit"]')->count())->toBe(1, 'Missing submit button');
+    expect($form->filter('input[type="hidden"][name="_token"]')->count())->toBe(1, 'Missing CSRF for the form');
+    expect($form->filter('input[name="_method"][value="PATCH"]')->count())->toBe(1, 'Missing patch method override');
+    expect($form->attr('action'))->toBe($updateUrl, 'Edit form action does not match update route');
+});
