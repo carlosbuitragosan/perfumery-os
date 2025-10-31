@@ -83,6 +83,14 @@ function crawl($response): Crawler
     return new Crawler($response->getContent());
 }
 
+// get response + crawler for a user's page visit
+function getPageCrawler(User $user, string $url): array
+{
+    $response = getAs($user, $url)->assertOk();
+
+    return [$response, crawl($response)];
+}
+
 // Assert a set of checkbox inputs exists by name/value
 function assertInputs(Crawler $crawler, string $name, array $expected): void
 {
