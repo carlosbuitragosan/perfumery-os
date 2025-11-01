@@ -51,7 +51,11 @@
                @if ($bottle->supplier_url)
                   <div>
                      <span class="font-medium">URL:</span>
-                     <a href="{{ $bottle->supplier_url }}" class="underline">
+                     <a
+                        href="{{ $bottle->supplier_url }}"
+                        title="{{ $bottle->supplier_url }}"
+                        class="underline block truncate"
+                     >
                         {{ $bottle->supplier_url }}
                      </a>
                   </div>
