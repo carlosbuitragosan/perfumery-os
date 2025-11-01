@@ -157,29 +157,30 @@ describe('Bottle editing', function () {
         expect($originInput->attr('value'))->toBe($bottle->origin_country);
     });
 
-    it('updates a bottle and redirects', function () {
-        $bottle = makeBottle($this->material);
-        $payload = bottlePayload([
-            'origin_country' => 'Colombia',
-            'plant_part' => 'flowers',
-            'price' => 200,
-        ]);
+    it('updates a bottle and redirects to the correct view', function (int $padding) {
+        // create materials to add noise
+        for ($i = 0; $i < $padding; $i++) {
+            makeMaterial(['name' => "Pad-$i"]);
+        }
+
+        // create target for updating and redirecting
+        $targetMaterial = makeMaterial(['name' => "Target-$padding"]);
+        $bottle = makeBottle($targetMaterial);
+
+        // add more materials for more noise
+        for ($i = 0; $i < 3; $i++) {
+            makeMaterial(['name' => "Tail-$i"]);
+        }
+
+        // minimal change for update
+        $payload = bottlePayload(['price' => 123]);
         $updateUrl = route('bottles.update', $bottle);
-        $showUrl = route('materials.show', $this->material).'#bottle-'.$bottle->id;
+        $showUrl = route('materials.show', $targetMaterial).'#bottle-'.$bottle->id;
 
         patchAs($this->user, $updateUrl, $payload)
             ->assertRedirect($showUrl)
             ->assertSessionHasNoErrors();
-
-        $this->assertDatabaseHas('bottles', [
-            'id' => $bottle->id,
-            'material_id' => $this->material->id,
-            'batch_code' => 'AB1234',
-            'origin_country' => 'Colombia',
-            'plant_part' => 'flowers',
-            'price' => 200,
-        ]);
-    });
+    })->with(range(0, 20));
 
     it('shows updated bottle data on the show page', function () {
         $bottle = makeBottle($this->material);

@@ -45,8 +45,6 @@ class BottleController extends Controller
 
     public function update(Request $request, Bottle $bottle)
     {
-        $material = $bottle->load('material');
-
         $data = $request->validate([
             'supplier_name' => ['nullable', 'string', 'max:255'],
             'supplier_url' => ['nullable', 'url'],
@@ -63,6 +61,7 @@ class BottleController extends Controller
         ]);
 
         $bottle->update($data);
+        $material = $bottle->material;
 
         return redirect(route('materials.show', $material).'#bottle-'.$bottle->id)
             ->with('ok', 'Bottle updated');
