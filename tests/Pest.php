@@ -41,8 +41,8 @@ function bottlePayload(array $overrides = []): array
         'method' => 'steam_distilled',
         'plant_part' => 'leaves',
         'origin_country' => 'Morocco',
-        'distillation_date' => '2021-01-30',
         'purchase_date' => '2025-03-01',
+        'expiry_date' => '2029-01-30',
         'volume_ml' => 10,
         'density' => 0.912,
         'price' => 4.99,
@@ -59,7 +59,10 @@ function makeBottle(Material $material, array $overrides = []): Bottle
     return $material->bottles()->create(bottlePayload($overrides));
 }
 
-// Act as user and GET/POST/PATCH
+// get a test instance test()
+// login as the given user actingAs()
+// send HTTP request to the URI
+// return a TestResponse (HTML, headers, cookies, status, etc.)
 function getAs(User $user, string $uri)
 {
     return test()->actingAs($user)->get($uri);
@@ -77,7 +80,7 @@ function patchAs(User $user, string $uri, array $data = [])
     return test()->actingAs($user)->patch($uri, $data);
 }
 
-// Build a DomCrawler from the response
+// Build a DomCrawler from the response and extract the HTML into an object
 function crawl($response): Crawler
 {
     return new Crawler($response->getContent());

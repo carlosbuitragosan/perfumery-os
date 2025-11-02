@@ -37,7 +37,7 @@ describe('Bottle creation', function () {
         $assertInput('select[name="method"]');
         $assertInput('input[name="plant_part"]');
         $assertInput('input[name="origin_country"]');
-        $assertInput('input[name="distillation_date"]');
+        $assertInput('input[name="expiry_date"]');
         $assertInput('input[name="purchase_date"]');
         $assertInput('input[name="density"]');
         $assertInput('input[name="volume_ml"]');
@@ -60,12 +60,12 @@ describe('Bottle creation', function () {
 
     it('creates a bottle for the material on form submit', function () {
         $payload = bottlePayload(['batch_code' => 'AB123']);
-
         $storeUrl = route('materials.bottles.store', $this->material);
+        $redirectRoute = route('materials.show', $this->material);
 
-        $response = postAs($this->user, $storeUrl, $payload);
-        $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('materials.show', $this->material));
+        postAs($this->user, $storeUrl, $payload)
+            ->assertSessionHasNoErrors()
+            ->assertRedirect($redirectRoute);
 
         expect(Bottle::whereMaterialId($this->material->id)
             ->whereBatchCode('AB123')
@@ -73,6 +73,18 @@ describe('Bottle creation', function () {
             ->whereIsActive(true)
             ->exists())
             ->toBeTrue('Bottle not created in DB');
+    });
+
+    it('shows expiry date field instead of distillation date in the create form', function () {
+        $createUrl = route('materials.bottles.create', $this->material);
+
+        [$response, $crawler] = getPageCrawler($this->user, $createUrl);
+
+        expect($crawler->text())->not->toContain('Distillation Date');
+        expect($crawler->filter('input[type="date"][name="distillation_date"]')->count())->toBe(0, 'An input with name distillation_date has been found');
+
+        expect($crawler->text())->toContain('Expiry Date');
+        expect($crawler->filter('input[type="date"][name="expiry_date"]')->count())->toBe(1, 'Missing expiry date in form');
     });
 });
 
@@ -90,7 +102,6 @@ describe('Bottle display', function () {
         expect($bottleDiv->text())->toContain('Steam distilled');
         expect($bottleDiv->text())->toContain('leaves');
         expect($bottleDiv->text())->toContain('Morocco');
-        expect($bottleDiv->text())->toContain('30/01/2021');
         expect($bottleDiv->text())->toContain('01/03/2025');
         expect($bottleDiv->text())->toContain('10');
         expect($bottleDiv->text())->toContain('0.912');

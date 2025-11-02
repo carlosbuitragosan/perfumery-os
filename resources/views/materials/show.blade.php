@@ -18,7 +18,7 @@
       </a>
       {{-- Succes update message --}}
       @if (session('ok'))
-         <div>{{ session('ok') }}</div>
+         <div class="rounded bg-green-900/50 text-green-200 px-3 py-2">{{ session('ok') }}</div>
       @endif
 
       {{-- Stock --}}
@@ -78,12 +78,12 @@
                   {{ $bottle->origin_country }}
                </div>
                <div>
-                  <span class="font-medium">Distillation date:</span>
-                  {{ $bottle->distillation_date ? Carbon::parse($bottle->distillation_date)->format('d/m/Y') : '-' }}
-               </div>
-               <div>
                   <span class="font-medium">Purchase date:</span>
                   {{ $bottle->purchase_date ? Carbon::parse($bottle->purchase_date)->format('d/m/Y') : '-' }}
+               </div>
+               <div>
+                  <span class="font-medium">Distillation date:</span>
+                  {{ $bottle->expiry_date ? Carbon::parse($bottle->expiry_date)->format('d/m/Y') : '-' }}
                </div>
                <div>
                   <span class="font-medium">Volume:</span>

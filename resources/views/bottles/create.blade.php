@@ -77,22 +77,22 @@
          </label>
 
          <label class="block">
-            <span class="text-sm">Distillation Date</span>
-            <input
-               type="date"
-               name="distillation_date"
-               class="p-2 w-full"
-               value="{{ old('distillation_date') }}"
-            />
-         </label>
-
-         <label class="block">
             <span class="text-sm">Purchase Date</span>
             <input
                type="date"
                name="purchase_date"
                class="p-2 w-full"
                value="{{ old('purchase_date') }}"
+            />
+         </label>
+
+         <label class="block">
+            <span class="text-sm">Expiry Date</span>
+            <input
+               type="date"
+               name="expiry_date"
+               class="p-2 w-full"
+               value="{{ old('expiry_date') }}"
             />
          </label>
 

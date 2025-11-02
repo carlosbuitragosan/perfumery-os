@@ -7,14 +7,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
 
-// Dashboard
-Route::get('/dashboard', fn () => view('dashboard'))
-    ->middleware(['auth'])
-    ->name('dashboard');
-
 // Authenticated routes
 Route::middleware('auth')
     ->group(function () {
+        // Dashboard
+        Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+
         // Profile
         Route::controller(ProfileController::class)->group(function () {
             Route::get('/profile', 'edit')->name('profile.edit');
