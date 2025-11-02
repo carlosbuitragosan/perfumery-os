@@ -44,83 +44,119 @@
                      </span>
                   @endif
                </div>
-               <div>
-                  <span class="font-medium">Supplier:</span>
-                  {{ $bottle->supplier_name }}
-               </div>
-               @if ($bottle->supplier_url)
+
+               @if (filled($bottle->supplier_name))
                   <div>
+                     <span class="font-medium">Supplier:</span>
+                     {{ $bottle->supplier_name }}
+                  </div>
+               @endif
+
+               @if ($bottle->supplier_url)
+                  <div class="flex gap-1 whitespace-nowrap">
                      <span class="font-medium">URL:</span>
                      <a
                         href="{{ $bottle->supplier_url }}"
                         title="{{ $bottle->supplier_url }}"
-                        class="underline block truncate"
+                        class="underline inline-block max-w-full truncate align-top"
                      >
                         {{ $bottle->supplier_url }}
                      </a>
                   </div>
                @endif
 
-               <div>
-                  <span class="font-medium">Batch:</span>
-                  {{ $bottle->batch_code }}
-               </div>
-               <div>
-                  <span class="font-medium">Method:</span>
-                  {{ $enum?->label() ?? Str::of((string) $bottle->method)->replace('_', ' ')->title() ?:'-' }}
-               </div>
-               <div>
-                  <span class="font-medium">Plant part:</span>
-                  {{ $bottle->plant_part }}
-               </div>
-               <div>
-                  <span class="font-medium">Origin:</span>
-                  {{ $bottle->origin_country }}
-               </div>
-               <div>
-                  <span class="font-medium">Purchase date:</span>
-                  {{ $bottle->purchase_date ? Carbon::parse($bottle->purchase_date)->format('d/m/Y') : '-' }}
-               </div>
-               <div>
-                  <span class="font-medium">Expiry date:</span>
-                  {{ $bottle->expiry_date ? Carbon::parse($bottle->expiry_date)->format('d/m/Y') : '-' }}
-               </div>
-               <div>
-                  <span class="font-medium">Volume:</span>
-                  {{ rtrim(rtrim(number_format((float) $bottle->volume_ml, 2, '.', ''), '0'), '.') }}
-                  ml
-               </div>
-               <div>
-                  <span class="font-medium">Density:</span>
-                  {{ number_format((float) $bottle->density, 3) }} g/ml
-               </div>
-               <div>
-                  <span class="font-medium">Price:</span>
-                  £{{ number_format((float) $bottle->price, 2) }}
-               </div>
-               <div>
-                  <span class="font-medium">Notes:</span>
-                  {{ $bottle->notes }}
-               </div>
-               @if ($bottle->is_active)
-                  <form method="POST" action="{{ route('bottles.finish', $bottle) }}">
-                     @csrf
-                     <button
-                        type="submit"
-                        class="py-2 rounded bg-transparent text-red-600 underline text-xs font-semibold"
-                     >
-                        MARK AS FINISHED
-                     </button>
-                  </form>
+               @if (filled($bottle->batch_code))
+                  <div>
+                     <span class="font-medium">Batch:</span>
+                     {{ $bottle->batch_code }}
+                  </div>
                @endif
 
-               <div class="flex gap-2 justify-end">
-                  <x-link
-                     href="{{ route('bottles.edit', $bottle) }} "
-                     class="text-sm bg-green-600 hover:bg-green-700"
-                  >
-                     EDIT
-                  </x-link>
+               @if (filled($bottle->method))
+                  <div>
+                     <span class="font-medium">Method:</span>
+                     {{ $enum?->label() }}
+                  </div>
+               @endif
+
+               @if (filled($bottle->plant_part))
+                  <div>
+                     <span class="font-medium">Plant part:</span>
+                     {{ $bottle->plant_part }}
+                  </div>
+               @endif
+
+               @if (filled($bottle->origin_country))
+                  <div>
+                     <span class="font-medium">Origin:</span>
+                     {{ $bottle->origin_country }}
+                  </div>
+               @endif
+
+               @if ($bottle->purchase_date)
+                  <div>
+                     <span class="font-medium">Purchase date:</span>
+                     {{ Carbon::parse($bottle->purchase_date)->format('d/m/Y') }}
+                  </div>
+               @endif
+
+               @if ($bottle->expiry_date)
+                  <div>
+                     <span class="font-medium">Expiry date:</span>
+                     {{ Carbon::parse($bottle->expiry_date)->format('d/m/Y') }}
+                  </div>
+               @endif
+
+               @if (filled($bottle->volume_ml))
+                  <div>
+                     <span class="font-medium">Volume:</span>
+                     {{ rtrim(rtrim(number_format((float) $bottle->volume_ml, 2, '.', ''), '0'), '.') }}
+                     ml
+                  </div>
+               @endif
+
+               @if (filled($bottle->density))
+                  <div>
+                     <span class="font-medium">Density:</span>
+                     {{ number_format((float) $bottle->density, 3) }} g/ml
+                  </div>
+               @endif
+
+               @if (filled($bottle->price))
+                  <div>
+                     <span class="font-medium">Price:</span>
+                     £{{ number_format((float) $bottle->price, 2) }}
+                  </div>
+               @endif
+
+               @if (filled($bottle->notes))
+                  <div>
+                     <span class="font-medium">Notes:</span>
+                     {{ $bottle->notes }}
+                  </div>
+               @endif
+
+               <div class="flex justify-between items-end">
+                  @if ($bottle->is_active)
+                     <form method="POST" action="{{ route('bottles.finish', $bottle) }}">
+                        @csrf
+                        <button
+                           type="submit"
+                           class="bg-transparent text-red-600 underline text-xs font-semibold"
+                        >
+                           MARK AS FINISHED
+                        </button>
+                     </form>
+                  @endif
+
+                  <div class="flex gap-2 justify-end">
+                     <x-link
+                        href="{{ route('bottles.edit', $bottle) }} "
+                        class="text-sm bg-green-600 hover:bg-green-700"
+                     >
+                        EDIT
+                     </x-link>
+                  </div>
                </div>
             </div>
          @empty

@@ -145,6 +145,31 @@ describe('Bottle display', function () {
         expect($newBottleDiv->text())->toContain('Expiry date');
         expect($newBottleDiv->text())->toContain('30/01/2029');
     });
+
+    it('shows only the fields that have been provided when creating the bottle', function () {
+        $payload = bottlePayload([
+            'plant_part' => '',
+            'purchase_date' => '',
+            'price' => '',
+            'supplier_name' => '',
+        ]);
+        $createUrl = route('materials.bottles.store', $this->material);
+        $showUrl = route('materials.show', $this->material);
+
+        postAs($this->user, $createUrl, $payload);
+        $newBottle = $this->material->bottles()->latest()->first();
+
+        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        $newBottleDiv = $crawler->filter("div#bottle-{$newBottle->id}");
+
+        expect($newBottleDiv->filter('span:contains("Plant part:")')->count())->toBe(0, 'Plant part still present');
+        expect($newBottleDiv->filter('span:contains("Purchase date:")')->count())->toBe(0, 'Purchase date still present');
+        expect($newBottleDiv->filter('span:contains("Price:")')->count())->toBe(0, 'Price still present');
+        expect($newBottleDiv->filter('span:contains("Supplier:")')->count())->toBe(0, 'Supplier still present');
+        expect($newBottleDiv->text())->toContain('URL:');
+        expect($newBottleDiv->text())->toContain('Origin:');
+
+    });
 });
 
 describe('Bottle editing', function () {
