@@ -82,7 +82,7 @@
          </label>
 
          <label class="block">
-            <span class="text-sm">Purchase Date</span>
+            <span class="text-sm">Purchase date</span>
             <input
                type="date"
                name="purchase_date"
@@ -92,7 +92,7 @@
          </label>
 
          <label class="block">
-            <span class="text-sm">Expiry Date</span>
+            <span class="text-sm">Expiry date</span>
             <input
                type="date"
                name="expiry_date"

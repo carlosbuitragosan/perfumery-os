@@ -80,10 +80,10 @@ describe('Bottle creation', function () {
 
         [$response, $crawler] = getPageCrawler($this->user, $createUrl);
 
-        expect($crawler->text())->not->toContain('Distillation Date');
+        expect($crawler->text())->not->toContain('Distillation date');
         expect($crawler->filter('input[type="date"][name="distillation_date"]')->count())->toBe(0, 'An input with name distillation_date has been found');
 
-        expect($crawler->text())->toContain('Expiry Date');
+        expect($crawler->text())->toContain('Expiry date');
         expect($crawler->filter('input[type="date"][name="expiry_date"]')->count())->toBe(1, 'Missing expiry date in form');
     });
 });
@@ -128,6 +128,22 @@ describe('Bottle display', function () {
         $firstBottle = $bottles->first()->attr('id');
 
         expect($firstBottle)->toBe("bottle-{$newer->id}", 'Newest bottle should appear first');
+    });
+
+    it('shows expiry date for a bottle on the material show page (and no distillation date', function () {
+        $payload = bottlePayload();
+        $createUrl = route('materials.bottles.store', $this->material);
+        $showUrl = route('materials.show', $this->material);
+
+        postAs($this->user, $createUrl, $payload);
+        $newBottle = $this->material->bottles()->latest()->first();
+
+        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        $newBottleDiv = $crawler->filter("div#bottle-{$newBottle->id}");
+
+        expect($newBottleDiv->text())->not->toContain('Distillation date');
+        expect($newBottleDiv->text())->toContain('Expiry date');
+        expect($newBottleDiv->text())->toContain('30/01/2029');
     });
 });
 

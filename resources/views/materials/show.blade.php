@@ -82,7 +82,7 @@
                   {{ $bottle->purchase_date ? Carbon::parse($bottle->purchase_date)->format('d/m/Y') : '-' }}
                </div>
                <div>
-                  <span class="font-medium">Distillation date:</span>
+                  <span class="font-medium">Expiry date:</span>
                   {{ $bottle->expiry_date ? Carbon::parse($bottle->expiry_date)->format('d/m/Y') : '-' }}
                </div>
                <div>
