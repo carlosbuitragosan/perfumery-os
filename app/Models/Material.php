@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
 {
-    protected $fillable = ['name',
+    protected $fillable = [
+        'user_id',
+        'name',
         'botanical',
         'pyramid',
         'families',

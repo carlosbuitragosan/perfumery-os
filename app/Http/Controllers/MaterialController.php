@@ -39,7 +39,8 @@ class MaterialController extends Controller
     // Shared validation
     private function validateMaterials(Request $request, ?Material $material = null): array
     {
-        $unique = Rule::unique('materials', 'name');
+        $unique = Rule::unique('materials', 'name')
+            ->where(fn ($q) => $q->where('user_id', auth()->id()));
         if ($material) {
             $unique = $unique->ignore($material->id);
         }
@@ -77,6 +78,8 @@ class MaterialController extends Controller
         if (! empty($data['botanical'])) {
             $data['botanical'] = trim($data['botanical']);
         }
+
+        $data['user_id'] = auth()->id();
 
         Material::create($data);
 
