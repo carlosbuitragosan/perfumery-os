@@ -22,6 +22,7 @@ class MaterialsIndex extends Component
     public function render()
     {
         $materials = Material::search($this->query)
+            ->where('user_id', auth()->id())
             ->orderBy('name')
             ->get();
 
