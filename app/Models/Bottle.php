@@ -10,6 +10,7 @@ class Bottle extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'supplier_name',
         'supplier_url',
         'batch_code',

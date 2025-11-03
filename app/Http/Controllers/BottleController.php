@@ -13,11 +13,14 @@ class BottleController extends Controller
     // show the form to create a bottle
     public function create(Material $material)
     {
+        abort_if($material->user_id !== auth()->id(), 404);
+
         return view('bottles.create', compact('material'));
     }
 
     public function store(Material $material, Request $request)
     {
+        abort_if($material->user_id !== auth()->id(), 404);
         $data = $request->validate([
             'supplier_name' => ['nullable', 'string', 'max:255'],
             'supplier_url' => ['nullable', 'url'],
@@ -33,6 +36,7 @@ class BottleController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
+        $data['user_id'] = auth()->id();
         $material->bottles()->create($data);
 
         return redirect()->route('materials.show', $material);
@@ -40,11 +44,15 @@ class BottleController extends Controller
 
     public function edit(Bottle $bottle)
     {
+        abort_if($bottle->user_id !== auth()->id(), 404);
+
         return view('bottles.edit', compact('bottle'));
     }
 
     public function update(Request $request, Bottle $bottle)
     {
+        abort_if($bottle->user_id !== auth()->id(), 404);
+
         $data = $request->validate([
             'supplier_name' => ['nullable', 'string', 'max:255'],
             'supplier_url' => ['nullable', 'url'],
