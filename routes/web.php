@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\DemoLoginController;
 use App\Http\Controllers\BottleController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProfileController;
@@ -37,5 +38,8 @@ Route::middleware('auth')
                 Route::post('/finish', 'finish')->name('bottles.finish');
             });
     });
+
+Route::post('/demo-login', [DemoLoginController::class, 'store'])
+    ->name('demo.login');
 
 require __DIR__.'/auth.php';

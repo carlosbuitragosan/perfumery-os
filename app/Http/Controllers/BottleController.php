@@ -77,6 +77,8 @@ class BottleController extends Controller
 
     public function finish(Bottle $bottle)
     {
+        abort_if($bottle->user_id !== auth()->id(), 404);
+
         $bottle->is_active = false;
         $bottle->save();
 
