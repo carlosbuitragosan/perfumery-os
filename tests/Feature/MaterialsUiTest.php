@@ -11,9 +11,12 @@ uses(RefreshDatabase::class)->in('Feature');
 // Create user
 beforeEach(function () {
     $this->user = User::factory()->create();
+    $this->actingAs($this->user);
 });
 
-it('redirect guests to login on /materials', function () {
+it('redirects guests to login on /materials', function () {
+    auth()->logout();
+
     $this->get('/materials')->assertRedirect('/login');
 });
 
@@ -28,9 +31,18 @@ it('validates and creates a material via POST', function () {
         'botanical' => 'Mentha piperita',
         'notes' => 'Fresh',
     ]))
-        ->assertRedirect('/materials');
+        ->assertRedirect(route('materials.index'));
 
     $this->assertDatabaseHas('materials', ['name' => 'Peppermint']);
+
+});
+
+// ******** TEST *************
+it('testing pest', function () {
+
+    $material = materialPayload();
+    $response = postAs($this->user, (route('materials.store')), $material);
+    $response->assertRedirect(route('materials.index'));
 });
 
 it('shows a cancel link on the create material page that returns to index', function () {

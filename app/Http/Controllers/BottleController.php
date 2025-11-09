@@ -21,6 +21,7 @@ class BottleController extends Controller
     public function store(Material $material, Request $request)
     {
         abort_if($material->user_id !== auth()->id(), 404);
+
         $data = $request->validate([
             'supplier_name' => ['nullable', 'string', 'max:255'],
             'supplier_url' => ['nullable', 'url'],
@@ -34,10 +35,30 @@ class BottleController extends Controller
             'volume_ml' => ['nullable', 'numeric', 'min:0'],
             'price' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
+            'files' => ['nullable', 'array'],
+            'files.*' => ['file', 'max:5120'],
         ]);
 
+        $files = $request->file('files', []);
+        unset($data['files']);
+
         $data['user_id'] = auth()->id();
-        $material->bottles()->create($data);
+        $bottle = $material->bottles()->create($data);
+
+        foreach ($files as $file) {
+            $originalName = $file->getClientOriginalName();
+
+            $storedPath = $file->storeAs("bottles/{$bottle->id}", $originalName, 'public');
+
+            $bottle->files()->create([
+                'user_id' => auth()->id(),
+                'path' => $storedPath,
+                'original_name' => $originalName,
+                'mime_type' => $file->getClientMimeType(),
+                'size_bytes' => $file->getSize(),
+                'note' => null,
+            ]);
+        }
 
         return redirect()->route('materials.show', $material);
     }

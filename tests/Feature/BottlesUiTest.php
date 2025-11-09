@@ -9,6 +9,7 @@ uses(RefreshDatabase::class);
 // Create user
 beforeEach(function () {
     $this->user = User::factory()->create();
+    $this->actingAs($this->user);
     $this->material = makeMaterial();
 });
 

@@ -20,6 +20,7 @@ function materialPayload(array $overrides = []): array
         'botanical' => 'Lavandula Angustifolia',
         'notes' => 'test',
         'pyramid' => ['top', 'heart'],
+        'user_id' => auth()->id(),
     ];
 
     return array_merge($base, $overrides);
@@ -28,6 +29,7 @@ function materialPayload(array $overrides = []): array
 // create a new material
 function makeMaterial(array $overrides = []): Material
 {
+
     return Material::create(materialPayload($overrides));
 }
 
@@ -56,7 +58,9 @@ function bottlePayload(array $overrides = []): array
 // createa new bottle
 function makeBottle(Material $material, array $overrides = []): Bottle
 {
-    return $material->bottles()->create(bottlePayload($overrides));
+    $withOwnership = array_merge(['user_id' => $material->user_id], $overrides);
+
+    return $material->bottles()->create(bottlePayload($withOwnership));
 }
 
 // get a test instance test()
@@ -71,13 +75,23 @@ function getAs(User $user, string $uri)
 // creates a post
 function postAs(User $user, string $uri, array $data = [])
 {
-    return test()->actingAs($user)->post($uri, $data);
+    $token = 'test-token';
+
+    return test()
+        ->actingAs($user)
+        ->withSession(['_token' => $token])
+        ->post($uri, array_merge($data, ['_token' => $token]));
 }
 
 // creates an update
 function patchAs(User $user, string $uri, array $data = [])
 {
-    return test()->actingAs($user)->patch($uri, $data);
+    $token = 'test-token';
+
+    return test()
+        ->actingAs($user)
+        ->withSession(['_token' => $token])
+        ->patch($uri, array_merge($data, ['_token' => $token]));
 }
 
 // Build a DomCrawler from the response and extract the HTML into an object
@@ -117,4 +131,23 @@ function assertNotChecked(Crawler $crawler, string $name, array $values): void
     foreach ($values as $value) {
         expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->attr('checked'))->toBeNull("Expected '{$name}' '{$value}' to be NOT checked");
     }
+}
+
+function postWithCsrf(string $uri, array $data = []): TestResponse
+{
+    $token = 'test-token';
+
+    return test()
+        ->withSession(['_token' => $token])
+        ->post($uri, array_merge($data, ['_token' => $token]));
+}
+
+function postAsWithCsrf(User $user, string $uri, array $data = []): TestResponse
+{
+    $token = 'test-token';
+
+    return test()
+        ->actingAs($user)
+        ->withSession(['_token' => $token])
+        ->post($uri, array_merge($data, ['_token' => $token]));
 }

@@ -33,4 +33,9 @@ class Bottle extends Model
     {
         return $this->belongsTo(Material::class);
     }
+
+    public function files()
+    {
+        return $this->hasMany(BottleFile::class);
+    }
 }
