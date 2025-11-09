@@ -171,6 +171,43 @@ describe('Bottle display', function () {
         expect($newBottleDiv->text())->toContain('Origin:');
 
     });
+
+    it('shows bottle files on the material show page', function () {
+        $bottle = makeBottle($this->material);
+        $showUrl = route('materials.show', $this->material);
+
+        $file1 = $bottle->files()->create([
+            'user_id' => $this->user->id,
+            'path' => "bottles/{$bottle->id}/coa.pdf",
+            'original_name' => 'coa.pdf',
+            'mime_type' => 'application/pdf',
+            'size_bytes' => 12345,
+            'note' => null,
+        ]);
+
+        $file2 = $bottle->files()->create([
+            'user_id' => $this->user->id,
+            'path' => "bottles/{$bottle->id}/bottle.jpg",
+            'original_name' => 'bottle.jpg',
+            'mime_type' => 'image/jpeg',
+            'size_bytes' => 67890,
+            'note' => null,
+        ]);
+
+        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+
+        $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
+        expect($bottleDiv->count())->toBe(1);
+        expect($bottleDiv->text())->toContain('coa.pdf');
+        expect($bottleDiv->text())->toContain('bottle.jpg');
+
+        $links = $bottleDiv->filter('a.bottle-file-link');
+        expect($links->count())->toBe(2);
+
+        $hrefs = $links->each(fn ($node) => $node->attr('href'));
+        expect($hrefs[0])->toContain("bottles/{$bottle->id}/");
+        expect($hrefs[1])->toContain("bottles/{$bottle->id}/");
+    });
 });
 
 describe('Bottle editing', function () {

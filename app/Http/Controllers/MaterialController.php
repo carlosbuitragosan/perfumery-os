@@ -110,7 +110,7 @@ class MaterialController extends Controller
     // material show page
     public function show(Material $material)
     {
-        $material->load('bottles');
+        $material->load(['bottles.files']);
 
         return view('materials.show', compact('material'));
     }

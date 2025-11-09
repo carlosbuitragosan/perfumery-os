@@ -136,6 +136,21 @@
                   </div>
                @endif
 
+               @if ($bottle->files->isNotEmpty())
+                  <div class="mt-2 flex flex-wrap gap-2 items-center">
+                     <span>Files:</span>
+                     @foreach ($bottle->files as $file)
+                        <a
+                           href="{{ Storage::disk('public')->url($file->path) }}"
+                           class="bottle-file-link inline-flex items-center gap-1 px-2 py-1 rounded-md border border-gray-700 hover:border-indigo-500 hover:text-indigo-300 text-xs"
+                           target="_blank"
+                        >
+                           {{ $file->original_name }}
+                        </a>
+                     @endforeach
+                  </div>
+               @endif
+
                <div class="flex justify-between items-end">
                   @if ($bottle->is_active)
                      <form method="POST" action="{{ route('bottles.finish', $bottle) }}">
