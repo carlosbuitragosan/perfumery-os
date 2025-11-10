@@ -151,6 +151,32 @@
                class="pb-2 w-full text-sm file:mr-4 file:rounded-md file:px-4 file:py-1 file:text-sm file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer"
             />
          </label>
+         @if ($bottle->files->isNotEmpty())
+            <div class="mt-2 text-sm">
+               <div class="mb-4">
+                  <span class="block font-semibold mb-1">Attached files:</span>
+                  <span class="italic mb-6">Select to remove when saving</span>
+               </div>
+
+               @foreach ($bottle->files as $file)
+                  <div class="flex items-center gap-2 mb-6">
+                     <input
+                        type="checkbox"
+                        name="remove_files[]"
+                        value="{{ $file->id }}"
+                        class="rounded bg-gray-500 focus:ring-indigo-900"
+                     />
+                     <a
+                        href="{{ Storage::disk('public')->url($file->path) }}"
+                        target="_blank"
+                        class="hover:text-indigo-300"
+                     >
+                        {{ $file->original_name }}
+                     </a>
+                  </div>
+               @endforeach
+            </div>
+         @endif
 
          <div class="flex gap-2">
             <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">

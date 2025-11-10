@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Bottle;
+use App\Models\BottleFile;
 use App\Models\Material;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -55,12 +56,27 @@ function bottlePayload(array $overrides = []): array
     return array_merge($base, $overrides);
 }
 
-// createa new bottle
+// create a new bottle
 function makeBottle(Material $material, array $overrides = []): Bottle
 {
     $withOwnership = array_merge(['user_id' => $material->user_id], $overrides);
 
     return $material->bottles()->create(bottlePayload($withOwnership));
+}
+
+// create a file for a bottle
+function makeBottleFile(Bottle $bottle, array $overrides = []): BottleFile
+{
+    $base = [
+        'user_id' => $bottle->user_id ?? auth()->id(),
+        'path' => "bottles/{$bottle->id}/coa.pdf",
+        'original_name' => 'coa.pdf',
+        'mime_type' => 'application/pdf',
+        'size_bytes' => 12345,
+        'note' => null,
+    ];
+
+    return $bottle->files()->create(array_merge($base, $overrides));
 }
 
 // get a test instance test()
@@ -131,23 +147,4 @@ function assertNotChecked(Crawler $crawler, string $name, array $values): void
     foreach ($values as $value) {
         expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->attr('checked'))->toBeNull("Expected '{$name}' '{$value}' to be NOT checked");
     }
-}
-
-function postWithCsrf(string $uri, array $data = []): TestResponse
-{
-    $token = 'test-token';
-
-    return test()
-        ->withSession(['_token' => $token])
-        ->post($uri, array_merge($data, ['_token' => $token]));
-}
-
-function postAsWithCsrf(User $user, string $uri, array $data = []): TestResponse
-{
-    $token = 'test-token';
-
-    return test()
-        ->actingAs($user)
-        ->withSession(['_token' => $token])
-        ->post($uri, array_merge($data, ['_token' => $token]));
 }

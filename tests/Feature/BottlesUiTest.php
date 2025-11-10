@@ -3,6 +3,9 @@
 use App\Models\Bottle;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -172,42 +175,6 @@ describe('Bottle display', function () {
 
     });
 
-    it('shows bottle files on the material show page', function () {
-        $bottle = makeBottle($this->material);
-        $showUrl = route('materials.show', $this->material);
-
-        $file1 = $bottle->files()->create([
-            'user_id' => $this->user->id,
-            'path' => "bottles/{$bottle->id}/coa.pdf",
-            'original_name' => 'coa.pdf',
-            'mime_type' => 'application/pdf',
-            'size_bytes' => 12345,
-            'note' => null,
-        ]);
-
-        $file2 = $bottle->files()->create([
-            'user_id' => $this->user->id,
-            'path' => "bottles/{$bottle->id}/bottle.jpg",
-            'original_name' => 'bottle.jpg',
-            'mime_type' => 'image/jpeg',
-            'size_bytes' => 67890,
-            'note' => null,
-        ]);
-
-        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
-
-        $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
-        expect($bottleDiv->count())->toBe(1);
-        expect($bottleDiv->text())->toContain('coa.pdf');
-        expect($bottleDiv->text())->toContain('bottle.jpg');
-
-        $links = $bottleDiv->filter('a.bottle-file-link');
-        expect($links->count())->toBe(2);
-
-        $hrefs = $links->each(fn ($node) => $node->attr('href'));
-        expect($hrefs[0])->toContain("bottles/{$bottle->id}/");
-        expect($hrefs[1])->toContain("bottles/{$bottle->id}/");
-    });
 });
 
 describe('Bottle editing', function () {
@@ -345,4 +312,98 @@ it('marks a bottle as finished from the material show page', function () {
     $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
     expect($bottleDiv->text())->toContain('Finished');
     expect($bottleDiv->text())->not->toContain('In use');
+});
+
+describe('Bottle files', function () {
+    it('shows bottle files on the material show page', function () {
+        $bottle = makeBottle($this->material);
+        $showUrl = route('materials.show', $this->material);
+
+        $file1 = makeBottleFile($bottle);
+
+        $file2 = makeBottleFile($bottle, [
+            'path' => "bottles/{$bottle->id}/bottle.jpg",
+            'original_name' => 'bottle.jpg',
+            'mime_type' => 'image/jpeg',
+        ]);
+
+        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+
+        $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
+        expect($bottleDiv->count())->toBe(1);
+        expect($bottleDiv->text())->toContain('coa.pdf');
+        expect($bottleDiv->text())->toContain('bottle.jpg');
+
+        $links = $bottleDiv->filter('a.bottle-file-link');
+        expect($links->count())->toBe(2);
+
+        $hrefs = $links->each(fn ($node) => $node->attr('href'));
+        expect($hrefs[0])->toContain("bottles/{$bottle->id}/");
+        expect($hrefs[1])->toContain("bottles/{$bottle->id}/");
+    });
+
+    it('allows a user to upload files when creating a bottle', function () {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $material = makeMaterial();
+        // makes a pretend uploaded file not yet saved anywhere
+        $file1 = UploadedFile::fake()->create('coa.pdf', 200, 'application/pdf');
+        $file2 = UploadedFile::fake()->image('bottle.jpg');
+        $payload = bottlePayload(['files' => [$file1, $file2]]);
+        $postUrl = route('materials.bottles.store', $material);
+
+        $response = postAs($user, $postUrl, $payload);
+        $bottle = Bottle::first();
+        $response->assertRedirect(route('materials.show', $bottle->material));
+
+        Storage::disk('public')->assertExists("bottles/{$bottle->id}/coa.pdf");
+        Storage::disk('public')->assertExists("bottles/{$bottle->id}/bottle.jpg");
+
+        expect(DB::table('bottle_files')->count())->toBe(2);
+        expect(DB::table('bottle_files')
+            ->where('original_name', 'coa.pdf')
+            ->where('bottle_id', $bottle->id)
+            ->exists()
+        )->toBeTrue();
+    });
+
+    it('shows existing files with remove checkboxes on the bottle edit form', function () {
+        Storage::fake('public');
+
+        $bottle = makeBottle($this->material);
+        $file = makeBottleFile($bottle);
+        $editUrl = route('bottles.edit', $bottle);
+        [$response, $crawler] = getPageCrawler($this->user, $editUrl);
+
+        $form = $crawler->filter('form#bottle-edit-form');
+        expect($form->count())->toBe(1);
+        expect($form->text())->toContain($file->original_name);
+
+        $checkbox = $form->filter("input[name='remove_files[]'][value='{$file->id}']");
+        expect($checkbox->count())->toBe(1);
+    });
+
+    it('deletes the selected file when editing a bottle', function () {
+        Storage::fake('public');
+
+        $bottle = makeBottle($this->material);
+        $patchUrl = route('bottles.update', $bottle);
+        $redirectUrl = route('materials.show', $bottle->material).'#bottle-'.$bottle->id;
+        $file = makeBottleFile($bottle);
+
+        // put a fake file into a fake filesystem
+        Storage::disk('public')->put($file->path, 'dummy content');
+
+        $payload = bottlePayload(['remove_files' => [$file->id]]);
+
+        patchAs($this->user, $patchUrl, $payload)
+            ->assertRedirect($redirectUrl);
+
+        Storage::disk('public')->assertMissing($file->path);
+
+        expect(DB::table('bottle_files')->where('id', $file->id)->exists())->toBeFalse();
+    });
 });

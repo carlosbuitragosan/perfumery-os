@@ -6,6 +6,7 @@ use App\Enums\ExtractionMethod;
 use App\Models\Bottle;
 use App\Models\Material;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Enum as EnumRule;
 
 class BottleController extends Controller
@@ -87,9 +88,27 @@ class BottleController extends Controller
             'volume_ml' => ['nullable', 'numeric', 'min:0'],
             'price' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
+            'remove_files' => ['sometimes', 'array'],
+            'remove_files.*' => ['integer'],
         ]);
+        $removeIds = $data['remove_files'] ?? [];
+        unset($data['remove_files']);
 
         $bottle->update($data);
+
+        // delete files
+        if (! empty($removeIds)) {
+            $files = $bottle->files()
+                ->whereIn('id', $removeIds)
+                ->get();
+
+            foreach ($files as $file) {
+                // delete physical file from disk
+                Storage::disk('public')->delete($file->path);
+                // delete DB row
+                $file->delete();
+            }
+        }
         $material = $bottle->material;
 
         return redirect(route('materials.show', $material).'#bottle-'.$bottle->id)
