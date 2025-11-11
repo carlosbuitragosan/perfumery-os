@@ -345,17 +345,13 @@ describe('Bottle files', function () {
     it('allows a user to upload files when creating a bottle', function () {
         Storage::fake('public');
 
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $material = makeMaterial();
         // makes a pretend uploaded file not yet saved anywhere
         $file1 = UploadedFile::fake()->create('coa.pdf', 200, 'application/pdf');
         $file2 = UploadedFile::fake()->image('bottle.jpg');
         $payload = bottlePayload(['files' => [$file1, $file2]]);
-        $postUrl = route('materials.bottles.store', $material);
+        $postUrl = route('materials.bottles.store', $this->material);
 
-        $response = postAs($user, $postUrl, $payload);
+        $response = postAs($this->user, $postUrl, $payload);
         $bottle = Bottle::first();
         $response->assertRedirect(route('materials.show', $bottle->material));
 

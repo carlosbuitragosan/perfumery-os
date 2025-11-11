@@ -3,7 +3,8 @@
       <h2>Create Bottle</h2>
       <span class="text-sm">{{ $material->name }}</span>
    </x-slot>
-   <div class="p-4 space-y-4">
+
+   <div class="p-4">
       <form
          method="POST"
          action="{{ route('materials.bottles.store', $material) }}"
@@ -136,14 +137,27 @@
             <textarea name="notes" rows="4" class="p-2 w-full"> {{ old('notes') }}</textarea>
          </label>
 
-         <label class="block">
-            <input
-               type="file"
-               name="files[]"
-               multiple
-               class="pb-2 w-full text-sm file:mr-4 file:rounded-md file:px-4 file:py-1 file:text-sm file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer"
-            />
-         </label>
+         {{-- Alpine.js to enable multiple uploads --}}
+         <div x-data="{ count: 1, firstSelected: false }" class="space-y-2 pb-4">
+            <label class="block text-sm">Files</label>
+            <template x-for="i in count" :key="i">
+               <input
+                  type="file"
+                  name="files[]"
+                  multiple
+                  class="pb-2 w-full text-sm file:mr-4 file:rounded-md file:px-4 file:py-1 file:text-sm file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer"
+                  @change="firstSelected = true"
+               />
+            </template>
+            <button
+               class="text-xs text-indigo-400 hover:text-indigo-300 underline"
+               type="button"
+               @click="count++"
+               x-show="firstSelected"
+            >
+               ADD ANOTHER FILE
+            </button>
+         </div>
 
          <div class="flex gap-2">
             <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">
