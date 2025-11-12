@@ -355,15 +355,19 @@ describe('Bottle files', function () {
         $bottle = Bottle::first();
         $response->assertRedirect(route('materials.show', $bottle->material));
 
-        Storage::disk('public')->assertExists("bottles/{$bottle->id}/coa.pdf");
-        Storage::disk('public')->assertExists("bottles/{$bottle->id}/bottle.jpg");
-
-        expect(DB::table('bottle_files')->count())->toBe(2);
-        expect(DB::table('bottle_files')
-            ->where('original_name', 'coa.pdf')
+        $files = DB::table('bottle_files')
             ->where('bottle_id', $bottle->id)
-            ->exists()
-        )->toBeTrue();
+            ->get();
+
+        expect($files->count())->toBe(2);
+
+        $originalNames = $files->pluck('original_name')->all();
+        expect($originalNames)->toContain('coa.pdf');
+        expect($originalNames)->toContain('bottle.jpg');
+
+        foreach ($files as $row) {
+            Storage::disk('public')->assertExists($row->path);
+        }
     });
 
     it('shows existing files with remove checkboxes on the bottle edit form', function () {
@@ -401,5 +405,37 @@ describe('Bottle files', function () {
         Storage::disk('public')->assertMissing($file->path);
 
         expect(DB::table('bottle_files')->where('id', $file->id)->exists())->toBeFalse();
+    });
+
+    it('allows users to upload files when editing a bottle', function () {
+        Storage::fake('public');
+        $bottle = makeBottle($this->material);
+        $file1 = UploadedFile::fake()->create('coa.pdf', 200, 'application/pdf');
+        $file2 = UploadedFile::fake()->image('bottle.jpg');
+        $payload = bottlePayload(['files' => [$file1, $file2]]);
+        $patchUrl = route('bottles.update', $bottle);
+        $redirectUrl = route('materials.show', $bottle->material).'#bottle-'.$bottle->id;
+
+        patchAs($this->user, $patchUrl, $payload)
+            ->assertRedirect($redirectUrl);
+
+        [$response, $crawler] = getPageCrawler($this->user, route('materials.show', $bottle->material));
+
+        $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
+
+        expect($bottleDiv->text())->toContain('coa.pdf');
+        expect($bottleDiv->text())->toContain('bottle.jpg');
+
+        $files = DB::table('bottle_files')
+            ->where('bottle_id', $bottle->id)
+            ->get();
+
+        $originalNames = $files->pluck('original_name')->all();
+        expect($originalNames)->toContain('coa.pdf');
+        expect($originalNames)->toContain('bottle.jpg');
+
+        foreach ($files as $row) {
+            Storage::disk('public')->assertExists($row->path);
+        }
     });
 });

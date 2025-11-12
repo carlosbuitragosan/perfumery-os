@@ -143,23 +143,36 @@
             >
          </label>
 
-         <label class="block">
-            <input
-               type="file"
-               name="files[]"
-               multiple
-               class="pb-2 w-full text-sm file:mr-4 file:rounded-md file:px-4 file:py-1 file:text-sm file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer"
-            />
-         </label>
+         {{-- Alpine.js to enable multiple uploads --}}
+         <div x-data="{ count: 1, firstSelected: false }" class="space-y-2 pb-4">
+            <template x-for="i in count" :key="i">
+               <input
+                  type="file"
+                  name="files[]"
+                  multiple
+                  class="pb-2 w-full text-sm file:mr-4 file:rounded-md file:px-4 file:py-1 file:text-sm file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer"
+                  @change="firstSelected = true"
+               />
+            </template>
+            <button
+               class="text-xs text-indigo-400 hover:text-indigo-300 underline"
+               type="button"
+               @click="count++"
+               x-show="firstSelected"
+            >
+               ADD ANOTHER FILE
+            </button>
+         </div>
+
          @if ($bottle->files->isNotEmpty())
             <div class="mt-2 text-sm">
                <div class="mb-4">
-                  <span class="block font-semibold mb-1">Attached files:</span>
+                  <span class="block font-semibold mb-1">Attached files</span>
                   <span class="italic mb-6">Select to remove when saving</span>
                </div>
 
                @foreach ($bottle->files as $file)
-                  <div class="flex items-center gap-2 mb-6">
+                  <div class="inline-flex items-center gap-2 px-4 mb-6">
                      <input
                         type="checkbox"
                         name="remove_files[]"

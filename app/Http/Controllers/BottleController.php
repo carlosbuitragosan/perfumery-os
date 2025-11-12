@@ -48,8 +48,7 @@ class BottleController extends Controller
 
         foreach ($files as $file) {
             $originalName = $file->getClientOriginalName();
-
-            $storedPath = $file->storeAs("bottles/{$bottle->id}", $originalName, 'public');
+            $storedPath = $file->store("bottles/{$bottle->id}", 'public');
 
             $bottle->files()->create([
                 'user_id' => auth()->id(),
@@ -90,10 +89,15 @@ class BottleController extends Controller
             'notes' => ['nullable', 'string'],
             'remove_files' => ['sometimes', 'array'],
             'remove_files.*' => ['integer'],
+            'files' => ['sometimes', 'array'],
+            'files.*' => ['file', 'max:5120'],
         ]);
+
         $removeIds = $data['remove_files'] ?? [];
+        $newFiles = $request->file('files', []);
         unset($data['remove_files']);
 
+        // update bottle fields
         $bottle->update($data);
 
         // delete files
@@ -109,6 +113,22 @@ class BottleController extends Controller
                 $file->delete();
             }
         }
+
+        // store newly uploaded files
+        foreach ($newFiles as $file) {
+            $originalName = $file->getClientOriginalName();
+            $storedPath = $file->store("bottles/{$bottle->id}", 'public');
+
+            $bottle->files()->create([
+                'user_id' => auth()->id(),
+                'path' => $storedPath,
+                'original_name' => $originalName,
+                'mime_type' => $file->getClientMimeType(),
+                'size_bytes' => $file->getSize(),
+                'note' => null,
+            ]);
+        }
+
         $material = $bottle->material;
 
         return redirect(route('materials.show', $material).'#bottle-'.$bottle->id)
