@@ -144,4 +144,27 @@ class BottleController extends Controller
 
         return redirect()->route('materials.show', $bottle->material_id);
     }
+
+    public function destroy(Request $request, Bottle $bottle)
+    {
+        abort_if($bottle->user_id !== auth()->id(), 404);
+
+        $material = $bottle->material;
+
+        // delete physical files:
+        foreach ($bottle->files as $file) {
+            Storage::disk('public')->delete($file->path);
+        }
+
+        // delete the folder too
+        Storage::disk('public')->deleteDirectory("bottles/{$bottle->id}");
+
+        // delete the bottle
+        $bottle->delete();
+
+        return redirect()
+            ->route('materials.show', $material)
+            ->with('ok', 'Bottle deleted');
+
+    }
 }

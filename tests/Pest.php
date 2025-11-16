@@ -110,6 +110,17 @@ function patchAs(User $user, string $uri, array $data = [])
         ->patch($uri, array_merge($data, ['_token' => $token]));
 }
 
+// delete
+function deleteAs(User $user, string $uri, array $data = [])
+{
+    $token = 'test-token';
+
+    return test()
+        ->actingAs($user)
+        ->withSession(['_token' => $token])
+        ->delete($uri, array_merge($data, ['_token' => $token]));
+}
+
 // Build a DomCrawler from the response and extract the HTML into an object
 function crawl($response): Crawler
 {

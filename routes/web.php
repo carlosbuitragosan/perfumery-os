@@ -29,13 +29,14 @@ Route::middleware('auth')
         Route::resource('materials.bottles', BottleController::class)
             ->only(['create', 'store']);
 
-        // editing / finishing an existing bottle
+        // editing / finishing / deleting an existing bottle
         Route::prefix('bottles/{bottle}')
             ->controller(BottleController::class)
             ->group(function () {
                 Route::get('/edit', 'edit')->name('bottles.edit');
                 Route::patch('/', 'update')->name('bottles.update');
                 Route::post('/finish', 'finish')->name('bottles.finish');
+                Route::delete('/delete', 'destroy')->name('bottles.destroy');
             });
     });
 

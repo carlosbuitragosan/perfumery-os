@@ -152,19 +152,33 @@
                @endif
 
                <div class="flex justify-between items-end">
-                  @if ($bottle->is_active)
-                     <form method="POST" action="{{ route('bottles.finish', $bottle) }}">
-                        @csrf
-                        <button
-                           type="submit"
-                           class="bg-transparent text-red-600 underline text-xs font-semibold"
-                        >
-                           MARK AS FINISHED
-                        </button>
-                     </form>
-                  @endif
+                  <div>
+                     @if ($bottle->is_active)
+                        <form method="POST" action="{{ route('bottles.finish', $bottle) }}">
+                           @csrf
+                           <button
+                              type="submit"
+                              class="bg-transparent text-red-600 underline text-xs font-semibold"
+                           >
+                              MARK AS FINISHED
+                           </button>
+                        </form>
+                     @endif
+                  </div>
 
                   <div class="flex gap-2 justify-end">
+                     <form
+                        method="POST"
+                        action="{{ route('bottles.destroy', $bottle) }}"
+                        class="bottle-delete-form"
+                        onsubmit="return confirm('Are you sure you want to delete this bottle?')"
+                     >
+                        @csrf
+                        @method('DELETE')
+                        <x-primary-button type="submit" class="bg-red-600 hover:bg-red-700">
+                           DELETE
+                        </x-primary-button>
+                     </form>
                      <x-link
                         href="{{ route('bottles.edit', $bottle) }} "
                         class="text-sm bg-green-600 hover:bg-green-700"

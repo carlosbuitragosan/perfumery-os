@@ -175,6 +175,25 @@ describe('Bottle display', function () {
 
     });
 
+    it('marks a bottle as finished from the material show page', function () {
+        $bottle = makeBottle($this->material, [
+            'supplier_name' => 'test supplier',
+            'method' => 'steam_distilled',
+        ]);
+        $finishUrl = route('bottles.finish', $bottle);
+        $showUrl = route('materials.show', $this->material);
+
+        $finishResponse = postAs($this->user, $finishUrl);
+        $finishResponse->assertRedirect(route('materials.show', $this->material));
+
+        $bottle->refresh();
+        expect($bottle->is_active)->toBeFalse();
+
+        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
+        expect($bottleDiv->text())->toContain('Finished');
+        expect($bottleDiv->text())->not->toContain('In use');
+    });
 });
 
 describe('Bottle editing', function () {
@@ -294,24 +313,48 @@ describe('Bottle editing', function () {
     });
 });
 
-it('marks a bottle as finished from the material show page', function () {
-    $bottle = makeBottle($this->material, [
-        'supplier_name' => 'test supplier',
-        'method' => 'steam_distilled',
-    ]);
-    $finishUrl = route('bottles.finish', $bottle);
-    $showUrl = route('materials.show', $this->material);
+describe('Bottle deletion', function () {
+    it('shows a delete button for each bottle', function () {
+        $bottle = makeBottle($this->material);
+        $bottlesUrl = route('materials.show', $this->material);
+        $deleteUrl = route('bottles.destroy', $bottle);
+        [$response, $crawler] = getPageCrawler($this->user, $bottlesUrl);
 
-    $finishResponse = postAs($this->user, $finishUrl);
-    $finishResponse->assertRedirect(route('materials.show', $this->material));
+        $bottleDiv = $crawler->filter("#bottle-{$bottle->id}");
+        $deleteForm = $bottleDiv->filter('form.bottle-delete-form');
 
-    $bottle->refresh();
-    expect($bottle->is_active)->toBeFalse();
+        expect($bottleDiv->text())->toContain('DELETE');
+        expect($deleteForm->count())->toBe(1);
+        expect($deleteForm->attr('action'))->toBe($deleteUrl);
+        expect($deleteForm->attr('onsubmit'))->toContain('confirm(');
+    });
 
-    [$response, $crawler] = getPageCrawler($this->user, $showUrl);
-    $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
-    expect($bottleDiv->text())->toContain('Finished');
-    expect($bottleDiv->text())->not->toContain('In use');
+    it('deletes a bottle and its files', function () {
+        Storage::fake('public');
+        $bottle = makeBottle($this->material);
+        $redirectUrl = route('materials.show', $bottle->material);
+        $deleteUrl = route('bottles.destroy', $bottle);
+        $file1 = makeBottleFile($bottle);
+        $file2 = makeBottleFile($bottle, [
+            'path' => "bottles/{$bottle->id}/bottle.jpg",
+            'original_name' => 'bottle.jpg',
+        ]);
+
+        // create fake files on disk
+        Storage::disk('public')->put($file1->path, 'dummy');
+        Storage::disk('public')->put($file2->path, 'dummy');
+
+        deleteAs($this->user, $deleteUrl)
+            ->assertRedirect($redirectUrl);
+
+        // check the DB
+        $this->assertDatabaseMissing('bottles', ['id' => $bottle->id]);
+        $this->assertDatabaseMissing('bottle_files', ['bottle_id' => $bottle->id]);
+
+        // check the filesystem
+        Storage::disk('public')->assertMissing($file1->path);
+        Storage::disk('public')->assertMissing($file2->path);
+    });
 });
 
 describe('Bottle files', function () {
