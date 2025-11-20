@@ -20,7 +20,7 @@ describe('Bottle creation', function () {
 
     it('shows a "add" button on the material show page linking to the create form', function () {
         $createUrl = route('materials.bottles.create', $this->material);
-        [$response, $crawler] = getPageCrawler($this->user, route('materials.show', $this->material));
+        [, $crawler] = getPageCrawler($this->user, route('materials.show', $this->material));
 
         $addButton = $crawler->filter('a[href="'.$createUrl.'"]');
         expect($addButton->count())->toBe(1, 'Missing add link to create bottle');
@@ -28,7 +28,7 @@ describe('Bottle creation', function () {
 
     it('shows the bottle create form with all fields', function () {
         $createUrl = route('materials.bottles.create', $this->material);
-        [$response, $crawler] = getPageCrawler($this->user, $createUrl);
+        [, $crawler] = getPageCrawler($this->user, $createUrl);
 
         $assertInput = function (string $selector) use ($crawler) {
             expect($crawler->filter($selector)->count())
@@ -55,7 +55,7 @@ describe('Bottle creation', function () {
 
     it('shows a cancel button in the bottle create form to go back to the specific material', function () {
         $createUrl = route('materials.bottles.create', $this->material);
-        [$response, $crawler] = getPageCrawler($this->user, $createUrl);
+        [, $crawler] = getPageCrawler($this->user, $createUrl);
 
         $cancelLink = $crawler->filter('a:contains("CANCEL")');
         expect($cancelLink->count())->toBe(1, 'Missing cancel button/link');
@@ -82,7 +82,7 @@ describe('Bottle creation', function () {
     it('shows expiry date field instead of distillation date in the create form', function () {
         $createUrl = route('materials.bottles.create', $this->material);
 
-        [$response, $crawler] = getPageCrawler($this->user, $createUrl);
+        [, $crawler] = getPageCrawler($this->user, $createUrl);
 
         expect($crawler->text())->not->toContain('Distillation date');
         expect($crawler->filter('input[type="date"][name="distillation_date"]')->count())->toBe(0, 'An input with name distillation_date has been found');
@@ -97,7 +97,7 @@ describe('Bottle display', function () {
         $bottle = makeBottle($this->material);
         $showUrl = route('materials.show', $this->material);
 
-        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        [, $crawler] = getPageCrawler($this->user, $showUrl);
         $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
 
         expect($bottleDiv->text())->toContain('Eden Botanicals');
@@ -126,7 +126,7 @@ describe('Bottle display', function () {
 
         $newer = makeBottle($material, ['batch_code' => 'new']);
 
-        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        [, $crawler] = getPageCrawler($this->user, $showUrl);
 
         $bottles = $crawler->filter("#bottle-{$newer->id}, #bottle-{$older->id}");
         $firstBottle = $bottles->first()->attr('id');
@@ -142,7 +142,7 @@ describe('Bottle display', function () {
         postAs($this->user, $createUrl, $payload);
         $newBottle = $this->material->bottles()->latest()->first();
 
-        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        [, $crawler] = getPageCrawler($this->user, $showUrl);
         $newBottleDiv = $crawler->filter("div#bottle-{$newBottle->id}");
 
         expect($newBottleDiv->text())->not->toContain('Distillation date');
@@ -163,7 +163,7 @@ describe('Bottle display', function () {
         postAs($this->user, $createUrl, $payload);
         $newBottle = $this->material->bottles()->latest()->first();
 
-        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        [, $crawler] = getPageCrawler($this->user, $showUrl);
         $newBottleDiv = $crawler->filter("div#bottle-{$newBottle->id}");
 
         expect($newBottleDiv->filter('span:contains("Plant part:")')->count())->toBe(0, 'Plant part still present');
@@ -189,7 +189,7 @@ describe('Bottle display', function () {
         $bottle->refresh();
         expect($bottle->is_active)->toBeFalse();
 
-        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        [, $crawler] = getPageCrawler($this->user, $showUrl);
         $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
         expect($bottleDiv->text())->toContain('Finished');
         expect($bottleDiv->text())->not->toContain('In use');
@@ -202,7 +202,7 @@ describe('Bottle editing', function () {
         $showUrl = route('materials.show', $this->material);
         $editUrl = route('bottles.edit', $bottle);
 
-        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        [, $crawler] = getPageCrawler($this->user, $showUrl);
 
         $link = $crawler->filter('a:contains("EDIT")')
             ->reduce(function ($node) use ($editUrl) {
@@ -215,7 +215,7 @@ describe('Bottle editing', function () {
     it('shows the edit form for a bottle', function () {
         $bottle = makeBottle($this->material);
         $editUrl = route('bottles.edit', $bottle);
-        [$response, $crawler] = getPageCrawler($this->user, $editUrl);
+        [, $crawler] = getPageCrawler($this->user, $editUrl);
 
         $header = $crawler->filter('header');
         expect($header->text())->toContain("{$this->material->name}");
@@ -272,7 +272,7 @@ describe('Bottle editing', function () {
             ->assertRedirect($showUrl)
             ->assertSessionHasNoErrors();
 
-        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        [, $crawler] = getPageCrawler($this->user, $showUrl);
 
         $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
         expect($bottleDiv->text())->toContain('Colombia');
@@ -285,7 +285,7 @@ describe('Bottle editing', function () {
         $bottle = makeBottle($this->material);
         $cancelUrl = route('materials.show', $this->material).'#bottle-'.$bottle->id;
 
-        [$response, $crawler] = getPageCrawler($this->user, route('bottles.edit', $bottle));
+        [, $crawler] = getPageCrawler($this->user, route('bottles.edit', $bottle));
 
         $cancelLink = $crawler->filter('a:contains("CANCEL")');
         expect($cancelLink->attr('href'))->toBe($cancelUrl);
@@ -295,7 +295,7 @@ describe('Bottle editing', function () {
         $bottle = makeBottle($this->material);
         $updateUrl = route('bottles.update', $bottle);
 
-        [$response, $crawler] = getPageCrawler($this->user, route('bottles.edit', $bottle));
+        [, $crawler] = getPageCrawler($this->user, route('bottles.edit', $bottle));
 
         $form = $crawler->filter('form#bottle-edit-form');
 
@@ -318,7 +318,7 @@ describe('Bottle deletion', function () {
         $bottle = makeBottle($this->material);
         $bottlesUrl = route('materials.show', $this->material);
         $deleteUrl = route('bottles.destroy', $bottle);
-        [$response, $crawler] = getPageCrawler($this->user, $bottlesUrl);
+        [, $crawler] = getPageCrawler($this->user, $bottlesUrl);
 
         $bottleDiv = $crawler->filter("#bottle-{$bottle->id}");
         $deleteForm = $bottleDiv->filter('form.bottle-delete-form');
@@ -370,7 +370,7 @@ describe('Bottle files', function () {
             'mime_type' => 'image/jpeg',
         ]);
 
-        [$response, $crawler] = getPageCrawler($this->user, $showUrl);
+        [, $crawler] = getPageCrawler($this->user, $showUrl);
 
         $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
         expect($bottleDiv->count())->toBe(1);
@@ -419,7 +419,7 @@ describe('Bottle files', function () {
         $bottle = makeBottle($this->material);
         $file = makeBottleFile($bottle);
         $editUrl = route('bottles.edit', $bottle);
-        [$response, $crawler] = getPageCrawler($this->user, $editUrl);
+        [, $crawler] = getPageCrawler($this->user, $editUrl);
 
         $form = $crawler->filter('form#bottle-edit-form');
         expect($form->count())->toBe(1);
@@ -462,7 +462,7 @@ describe('Bottle files', function () {
         patchAs($this->user, $patchUrl, $payload)
             ->assertRedirect($redirectUrl);
 
-        [$response, $crawler] = getPageCrawler($this->user, route('materials.show', $bottle->material));
+        [, $crawler] = getPageCrawler($this->user, route('materials.show', $bottle->material));
 
         $bottleDiv = $crawler->filter("div#bottle-{$bottle->id}");
 

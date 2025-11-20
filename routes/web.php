@@ -36,7 +36,7 @@ Route::middleware('auth')
                 Route::get('/edit', 'edit')->name('bottles.edit');
                 Route::patch('/', 'update')->name('bottles.update');
                 Route::post('/finish', 'finish')->name('bottles.finish');
-                Route::delete('/delete', 'destroy')->name('bottles.destroy');
+                Route::delete('/', 'destroy')->name('bottles.destroy');
             });
     });
 

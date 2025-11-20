@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Material;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class MaterialController extends Controller
 {
@@ -39,14 +40,8 @@ class MaterialController extends Controller
     // Shared validation
     private function validateMaterials(Request $request, ?Material $material = null): array
     {
-        $unique = Rule::unique('materials', 'name')
-            ->where(fn ($q) => $q->where('user_id', auth()->id()));
-        if ($material) {
-            $unique = $unique->ignore($material->id);
-        }
-
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255', $unique],
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
             'botanical' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
 
@@ -67,6 +62,23 @@ class MaterialController extends Controller
 
             'ifra_max_pct' => ['nullable', 'numeric', 'between:0,100'],
         ]);
+
+        $needle = mb_strtolower(trim($data['name']));
+
+        $query = Material::where('user_id', auth()->id())
+            ->whereRaw('LOWER(name) = ?', [$needle]);
+
+        if ($material) {
+            $query->where('id', '!=', $material->id);
+        }
+
+        if ($query->exists()) {
+            throw ValidationException::withMessages([
+                'name' => ['You already have a material with that name.'],
+            ]);
+        }
+
+        return $data;
     }
 
     // Store

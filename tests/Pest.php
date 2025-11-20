@@ -138,24 +138,33 @@ function getPageCrawler(User $user, string $url): array
 // Assert a set of checkbox inputs exists by name/value
 function assertInputs(Crawler $crawler, string $name, array $expected): void
 {
-    expect($crawler->filter("input[name=\"{$name}\"]")->count())->toBe(count($expected));
+    expect($crawler->filter("input[name=\"$name\"]")
+        ->count())
+        ->toBe(count($expected));
 
     foreach ($expected as $value) {
-        expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->count())->toBe(1, "Missing input[name=\"{$name}\"][value=\"{$value}\"]");
+        expect($crawler->filter("input[name=\"$name\"][value=\"$value\"]")
+            ->count())
+            ->toBe(1, "Missing input[name=\"$name\"][value=\"$value\"]");
     }
 }
 
-// Assert specific checkbox values are checked / not checked
+// Assert specific checkbox values are checked
 function assertChecked(Crawler $crawler, string $name, array $values): void
 {
     foreach ($values as $value) {
-        expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->attr('checked'))->not->toBeNull("expected '{$name}' '{$value}' to be checked");
+        expect($crawler->filter("input[name=\"$name\"][value=\"$value\"]")
+            ->attr('checked'))
+            ->not->toBeNull("expected '$name' '$value' to be checked");
     }
 }
 
+// Assert specific checkbox values are not checked
 function assertNotChecked(Crawler $crawler, string $name, array $values): void
 {
     foreach ($values as $value) {
-        expect($crawler->filter("input[name=\"{$name}\"][value=\"{$value}\"]")->attr('checked'))->toBeNull("Expected '{$name}' '{$value}' to be NOT checked");
+        expect($crawler->filter("input[name=\"$name\"][value=\"$value\"]")
+            ->attr('checked'))
+            ->toBeNull("Expected '$name' '$value' to be NOT checked");
     }
 }
