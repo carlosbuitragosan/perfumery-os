@@ -74,7 +74,7 @@
          <div class="-me-2 flex items-center sm:hidden">
             <button
                @click="open = ! open"
-               class="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-gray-800 hover:bg-gray-800 focus:outline-none focus:bg-gray-800 focus:text-gray-200 transition duration-150 ease-in-out"
+               class="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:bg-gray-800 focus:outline-none focus:bg-gray-800 transition duration-150 ease-in-out"
             >
                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                   <path
