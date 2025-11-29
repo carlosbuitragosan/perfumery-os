@@ -12,7 +12,7 @@
    <div class="p-4 space-y-4">
       <a
          href="{{ route('materials.bottles.create', $material) }}"
-         class="inline-block bg-gray-800 text-white px-3 py-2 rounded-md hover:bg-gray-700"
+         class="inline-flex items-center px-3 py-2 rounded-md text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
       >
          ADD
       </a>
@@ -28,17 +28,17 @@
                $enum = ExtractionMethod::tryFrom((string) $bottle->method);
             @endphp
 
-            <div class="rounded border p-4 text-sm space-y-1" id="bottle-{{ $bottle->id }}">
+            <div class="card border p-4 text-sm space-y-1" id="bottle-{{ $bottle->id }}">
                <div class="flex items-center gap-2 mb-1">
                   @if ($bottle->is_active)
                      <span
-                        class="text-sm px-2 py-0.5 rounded bg-green-100 text-green-700 font-medium"
+                        class="text-sm px-2 py-0.5 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-100"
                      >
                         In use
                      </span>
                   @else
                      <span
-                        class="text-sm px-2 py-0.5 rounded bg-green-100 text-green-700 font-medium"
+                        class="text-sm px-2 py-0.5 rounded font-medium bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-100"
                      >
                         Finished
                      </span>
@@ -58,7 +58,8 @@
                      <a
                         href="{{ $bottle->supplier_url }}"
                         title="{{ $bottle->supplier_url }}"
-                        class="underline inline-block max-w-full truncate align-top"
+                        class="inline-block max-w-full truncate align-top underline text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900 rounded-sm"
+                        target="_blank"
                      >
                         {{ $bottle->supplier_url }}
                      </a>
@@ -142,7 +143,7 @@
                      @foreach ($bottle->files as $file)
                         <a
                            href="{{ Storage::disk('public')->url($file->path) }}"
-                           class="bottle-file-link inline-flex items-center gap-1 px-2 py-1 rounded-md border border-gray-700 hover:border-indigo-500 hover:text-indigo-300 text-xs"
+                           class="bottle-file-link inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs border border-gray-300 text-slate-900 bg-white hover:border-indigo-500 hover:text-indigo-600 dark:border-gray-700 dark:text-gray-100 dark:bg-gray-900 dark:hover:border-indigo-500 dark:hover:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                            target="_blank"
                         >
                            {{ $file->original_name }}
@@ -158,7 +159,7 @@
                            @csrf
                            <button
                               type="submit"
-                              class="bg-transparent text-red-600 underline text-xs font-semibold"
+                              class="px-2 py-1 text-xs font-semibold underline rounded text-rose-700 hover:text-rose-600 dark:text-rose-300 dark:hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                            >
                               MARK AS FINISHED
                            </button>
@@ -175,13 +176,11 @@
                      >
                         @csrf
                         @method('DELETE')
-                        <x-primary-button type="submit" class="bg-red-600 hover:bg-red-700">
-                           DELETE
-                        </x-primary-button>
+                        <x-danger-button type="submit">DELETE</x-danger-button>
                      </form>
                      <x-link
                         href="{{ route('bottles.edit', $bottle) }} "
-                        class="text-sm bg-green-600 hover:bg-green-700"
+                        class="text-sm bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white"
                      >
                         EDIT
                      </x-link>

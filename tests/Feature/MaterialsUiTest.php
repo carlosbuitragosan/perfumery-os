@@ -3,10 +3,7 @@
 use App\Livewire\MaterialsIndex;
 use App\Models\Material;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-
-uses(RefreshDatabase::class)->in('Feature');
 
 // Create user
 beforeEach(function () {

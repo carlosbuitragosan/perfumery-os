@@ -173,12 +173,7 @@
             <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">
                SAVE
             </x-primary-button>
-            <a
-               href="{{ route('materials.index') }}"
-               class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-sm font-semibold"
-            >
-               CANCEL
-            </a>
+            <x-cancel-link href="{{ route('materials.index') }}">CANCEL</x-cancel-link>
          </div>
       </form>
    </div>

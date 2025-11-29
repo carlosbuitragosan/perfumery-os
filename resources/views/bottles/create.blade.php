@@ -150,12 +150,12 @@
                />
             </template>
             <button
-               class="text-xs text-indigo-400 hover:text-indigo-300 underline"
+               class="text-s underline text-indigo-900 hover:text-indigo-600 dark:text-indigo-300 dark:hover:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                type="button"
                @click="count++"
                x-show="firstSelected"
             >
-               ADD ANOTHER FILE
+               Add another file
             </button>
          </div>
 
@@ -163,12 +163,7 @@
             <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">
                SAVE
             </x-primary-button>
-            <a
-               href="{{ route('materials.show', $material) }}"
-               class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-sm font-semibold"
-            >
-               CANCEL
-            </a>
+            <x-cancel-link href="{{ route('materials.show', $material) }}">CANCEL</x-cancel-link>
          </div>
       </form>
    </div>

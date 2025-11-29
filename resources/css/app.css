@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer base {
+   /* Inputs (light + dark theme) */
    input[type='text'],
    input[type='email'],
    input[type='password'],
@@ -12,25 +13,27 @@
    input[type='date'],
    textarea,
    select {
-      @apply bg-gray-900 border border-gray-700 text-gray-100 placeholder-gray-400 rounded-md;
+      @apply rounded-md
+         border bg-white text-slate-900 border-gray-300 placeholder-gray-500 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-400;
    }
 
+   /* Focus styles */
    input:focus,
    textarea:focus,
    select:focus {
-      @apply ring-2 ring-indigo-500 border-indigo-500 outline-none;
+      @apply ring-2 ring-indigo-500 border-gray-600 outline-none ring-offset-2 ring-offset-white dark:ring-offset-gray-900;
    }
 
    /* Cards/containers */
    .card {
-      @apply bg-gray-900/70 border border-gray-800 rounded-lg;
+      @apply rounded-lg border border-gray-200 bg-white text-slate-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100;
    }
-}
 
-/* Remove browser clearn input button  */
-input[type='search']::-webkit-search-decoration,
-input[type='search']::-webkit-search-cancel-button,
-input[type='search']::-webkit-search-results-button,
-input[type='search']::-webkit-search-results-decoration {
-   display: none;
+   .card-hover {
+      @apply hover:bg-gray-100 dark:hover:bg-gray-800;
+   }
+
+   .card-focus {
+      @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-950;
+   }
 }

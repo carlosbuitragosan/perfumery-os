@@ -6,7 +6,7 @@
       <input
          x-model="q"
          x-ref="search"
-         class="w-full pl-10 pr-8"
+         class="w-full pl-10 pr-8 bg-red-600 dark:bg-red-700"
          type="search"
          name="query"
          inputmode="search"
@@ -32,36 +32,37 @@
    {{-- Button to create material --}}
    <a
       href="{{ route('materials.create') }}"
-      class="inline-block bg-gray-800 text-white px-3 py-2 rounded-md hover:bg-gray-700"
+      class="inline-flex items-center px-3 py-2 rounded-md text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
    >
       ADD
    </a>
 
    {{-- Show message when material has been added --}}
    @if (session('ok'))
-      <div class="rounded bg-green-900/50 text-green-200 px-3 py-2">
-         {{ session('ok') }}
-      </div>
+      <x-flash>{{ session('ok') }}</x-flash>
    @endif
 
    {{-- Materials list --}}
-   <div class="divide-y divide-gray-800 card">
+   <div class="space-y-2">
       @forelse ($materials as $m)
          <div
             id="material-{{ $m->id }}"
             x-data
             @click="window.location='{{ route('materials.show', $m) }}'"
-            class="px-3 py-3 hover:bg-gray-800 focus:bg-gray-800 focus:outline-none cursor-pointer rounded-md"
+            @keydown.enter.prevent="window.location='{{ route('materials.show', $m) }}'"
+            @keydown.space.prevent="window.location='{{ route('materials.show', $m) }}'"
+            tabindex="0"
+            class="card card-hover card-focus px-3 py-3 cursor-pointer"
          >
             {{-- Name links to material edit page --}}
             <a
                href="{{ route('materials.edit', $m) }}"
-               class="inline-block bg-gray-700 hover:bg-gray-900 rounded px-2 py-1 mb-2"
+               class="card-focus inline-block mb-2 rounded px-2 py-1 bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-900"
             >
-               <div class="font-medium text-gray-100">
+               <div class="font-medium text-slate-900 dark:text-gray-100">
                   {{ $m->name }}
                </div>
-               <div class="text-xs mb-1">
+               <div class="text-xs mb-1 text-slate-600 dark:text-gray-400">
                   @if ($m->botanical)
                      {{ $m->botanical }}
                   @endif
@@ -122,7 +123,7 @@
                   </span>
                @endforeach
             </div>
-            <div class="text-sm text-gray-400 mt-2">
+            <div class="text-sm text-slate-600 dark:text-gray-400 mt-2">
                @if ($m->notes)
                   {{ $m->notes }}
                @endif

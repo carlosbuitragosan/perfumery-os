@@ -1,11 +1,17 @@
-<nav x-data="{ open: false }" class="bg-gray-900 border-b border-gray-800">
+<nav
+   x-data="{ open: false }"
+   class="bg-white border:-b border-gray-200 dark:bg-gray-900 border-b dark:border-gray-800"
+>
    <!-- Primary Navigation Menu -->
    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
          <div class="flex">
             <!-- Logo -->
             <div class="shrink-0 flex items-center">
-               <a href="{{ route('dashboard') }}">
+               <a
+                  href="{{ route('dashboard') }}"
+                  class="focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900 rounded"
+               >
                   <img src="{{ asset('images/fragrance.png') }}" alt="Natuals Perfumery" />
                </a>
             </div>
@@ -26,10 +32,28 @@
 
          <!-- Settings Dropdown -->
          <div class="hidden sm:flex sm:items-center sm:ms-6">
+            {{-- light/dark theme --}}
+            <div class="flex items-center gap-2 text-xs">
+               <button
+                  type="button"
+                  onclick="toggleTheme()"
+                  class="p-1 mr-2 rounded-full bg-gray-100 text-slate-900 border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+               >
+                  <img
+                     src="{{ asset('images/sun-icon.svg') }}"
+                     class="w-4 h-4 block dark:hidden"
+                  />
+                  <img
+                     src="{{ asset('images/moon-icon.svg') }}"
+                     class="w-4 h-4 hidden dark:block"
+                  />
+               </button>
+            </div>
+
             <x-dropdown align="right" width="48">
                <x-slot name="trigger">
                   <button
-                     class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-200 bg-gray-900 hover:text-white focus:outline-none transition ease-in-out duration-150"
+                     class="inline-flex items-center px-3 py-2 border border-transparent text-sm rounded-md text-slate-900 bg-white hover:bg-gray-100 dark:text-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                   >
                      <div>{{ Auth::user()->name }}</div>
 
@@ -72,9 +96,27 @@
 
          <!-- Hamburger -->
          <div class="-me-2 flex items-center sm:hidden">
+            {{-- light/dark theme --}}
+            <div class="flex items-center gap-2 text-xs">
+               <button
+                  type="button"
+                  onclick="toggleTheme()"
+                  class="p-1 mr-2 rounded-full bg-gray-100 text-slate-900 border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+               >
+                  <img
+                     src="{{ asset('images/sun-icon.svg') }}"
+                     class="w-4 h-4 block dark:hidden"
+                  />
+                  <img
+                     src="{{ asset('images/moon-icon.svg') }}"
+                     class="w-4 h-4 hidden dark:block"
+                  />
+               </button>
+            </div>
+
             <button
                @click="open = ! open"
-               class="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:bg-gray-800 focus:outline-none focus:bg-gray-800 transition duration-150 ease-in-out"
+               class="inline-flex items-center justify-center p-2 rounded-md text-slate-900 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition duration-150 ease-in-out"
             >
                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                   <path
@@ -117,10 +159,14 @@
       </div>
 
       <!-- Responsive Settings Options -->
-      <div class="pt-4 pb-1 border-t border-gray-200">
+      <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-700">
          <div class="px-4">
-            <div class="font-medium text-base text-gray-200">{{ Auth::user()->name }}</div>
-            <div class="font-medium text-sm text-gray-200">{{ Auth::user()->email }}</div>
+            <div class="font-medium text-base text-slate-900 dark:text-gray-200">
+               {{ Auth::user()->name }}
+            </div>
+            <div class="font-medium text-sm text-slate-900 dark:text-gray-200">
+               {{ Auth::user()->email }}
+            </div>
          </div>
 
          <div class="mt-3 space-y-1">
