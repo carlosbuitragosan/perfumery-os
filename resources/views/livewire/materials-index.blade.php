@@ -52,13 +52,39 @@
             @keydown.enter.prevent="window.location='{{ route('materials.show', $m) }}'"
             @keydown.space.prevent="window.location='{{ route('materials.show', $m) }}'"
             tabindex="0"
-            class="card card-hover card-focus px-3 py-3 cursor-pointer"
+            class="card relative card-hover card-focus px-3 py-3 cursor-pointer"
          >
+            {{-- view icon --}}
+            <svg
+               class="absolute top-1 right-1 w-5 h-5 text-green-500 dark:text-green-300 pointer-events-none opacity-80 group-hover:opacity-100 transition"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               viewBox="0 0 24 24"
+            >
+               <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7
+           -1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+               />
+               <circle cx="12" cy="12" r="3" />
+            </svg>
+
             {{-- Name links to material edit page --}}
             <a
                href="{{ route('materials.edit', $m) }}"
-               class="card-focus inline-block mb-2 rounded px-2 py-1 bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-900"
+               class="relative group card-focus inline-block mb-2 rounded px-2 py-1 pr-8 bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-900"
             >
+               {{-- pencil icon --}}
+               <svg
+                  class="w-4 h-4 text-green-500 dark:text-green-300 absolute top-1 right-1"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+               >
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" />
+               </svg>
+
                <div class="font-medium text-slate-900 dark:text-gray-100">
                   {{ $m->name }}
                </div>
