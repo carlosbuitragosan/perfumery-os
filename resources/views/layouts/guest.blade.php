@@ -14,6 +14,8 @@
          rel="stylesheet"
       />
 
+      @include('layouts.partials.favicons')
+
       {{-- dark theme bootstrap --}}
       <script>
          (function () {

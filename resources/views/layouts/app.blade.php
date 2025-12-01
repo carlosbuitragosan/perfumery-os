@@ -14,15 +14,7 @@
          rel="stylesheet"
       />
 
-      {{-- Favicons --}}
-      <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
-      <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
-      <link rel="shortcut icon" href="/favicon/favicon.ico" />
-      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
-      <meta name="apple-mobile-web-app-title" content="Naturals" />
-      <link rel="manifest" href="/favicon/site.webmanifest" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      @include('layouts.partials.favicons')
 
       {{-- dark theme bootstrap --}}
       <script>
@@ -50,6 +42,7 @@
             }
          })();
       </script>
+
       <!-- Scripts -->
       @vite(['resources/css/app.css', 'resources/js/app.js'])
       @livewireStyles
