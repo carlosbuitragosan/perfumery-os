@@ -1,6 +1,6 @@
 <x-app-layout>
    <x-slot name="header">
-      <h2>Edit Bottle</h2>
+      <h2 class="font-semibold text-xl">Edit Bottle</h2>
       <span class="text-sm">{{ $bottle->material->name }}</span>
    </x-slot>
    <div class="p-4 space-y-4">

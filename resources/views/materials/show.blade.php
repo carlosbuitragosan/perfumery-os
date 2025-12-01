@@ -6,7 +6,8 @@
 
 <x-app-layout>
    <x-slot name="header">
-      <h2>{{ $material->name }}</h2>
+      <h2 class="font-semibold text-xl">View Bottles</h2>
+      <span class="text-sm">{{ $material->name }}</span>
    </x-slot>
 
    <div class="p-4 space-y-4">
