@@ -93,9 +93,10 @@ class MaterialController extends Controller
 
         $data['user_id'] = auth()->id();
 
-        Material::create($data);
+        $material = Material::create($data);
 
-        return redirect()->route('materials.index')->with('ok', 'Material added');
+        return redirect(route('materials.index').'#material-'.$material->id)
+            ->with('ok', 'Material added');
     }
 
     // Edit form
@@ -125,5 +126,15 @@ class MaterialController extends Controller
         $material->load(['bottles.files']);
 
         return view('materials.show', compact('material'));
+    }
+
+    public function destroy(Material $material)
+    {
+        $material->delete();
+
+        return redirect()
+            ->route('materials.index')
+            ->with('ok', 'Material deleted');
+
     }
 }

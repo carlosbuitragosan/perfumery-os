@@ -4,7 +4,12 @@
    </x-slot>
 
    <div class="p-4">
-      <form method="POST" action="{{ route('materials.update', $material) }}" class="space-y-3">
+      <form
+         id="material-update-{{ $material->id }}"
+         method="POST"
+         action="{{ route('materials.update', $material) }}"
+         class="space-y-3"
+      >
          @csrf
          @method('PATCH')
 
@@ -183,15 +188,30 @@
 {{ old('notes', $material->notes) }}</textarea
             >
          </label>
-
-         <div class="flex gap-2">
-            <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">
-               SAVE
-            </x-primary-button>
-            <x-cancel-link href="{{ route('materials.index') }}#material-{{ $material->id }}">
-               CANCEL
-            </x-cancel-link>
-         </div>
       </form>
+
+      <div class="mt-4 flex gap-2">
+         <x-primary-button
+            type="submit"
+            form="material-update-{{ $material->id }}"
+            class="bg-green-600 hover:bg-green-700"
+         >
+            SAVE
+         </x-primary-button>
+
+         <x-cancel-link href="{{ route('materials.index') }}#material-{{ $material->id }}">
+            CANCEL
+         </x-cancel-link>
+
+         <form
+            method="POST"
+            action="{{ route('materials.destroy', $material) }}"
+            onsubmit="return confirm('Delete this material?')"
+         >
+            @csrf
+            @method('DELETE')
+            <x-danger-button>DELETE</x-danger-button>
+         </form>
+      </div>
    </div>
 </x-app-layout>

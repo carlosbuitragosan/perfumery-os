@@ -23,7 +23,7 @@ Route::middleware('auth')
 
         // Materials
         Route::resource('materials', MaterialController::class)
-            ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
+            ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 
         // New bottle for a given material
         Route::resource('materials.bottles', BottleController::class)

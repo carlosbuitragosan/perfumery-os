@@ -30,23 +30,33 @@ describe('creating materials', function () {
 
     it('createa a material and redirects to index', function () {
         $postUrl = route('materials.store');
-        $redirectUrl = route('materials.index');
 
-        postAs($this->user, $postUrl, materialPayload())
-            ->assertRedirect($redirectUrl);
+        $response = postAs($this->user, $postUrl, materialPayload());
 
-        $this->assertDatabaseHas('materials', ['name' => 'Lavender']);
+        $material = Material::latest('id')->first();
+
+        $redirectUrl = route('materials.index').'#material-'.$material->id;
+
+        $response->assertRedirect($redirectUrl);
+
+        $this->assertDatabaseHas('materials', [
+            'name' => 'Lavender',
+            'id' => $material->id,
+        ]);
     });
 
     it('persists botanical when provided', function () {
         $postUrl = route('materials.store');
-        $redirectUrl = route('materials.index');
 
-        postAs($this->user, $postUrl, materialPayload())
-            ->assertRedirect($redirectUrl);
+        $response = postAs($this->user, $postUrl, materialPayload());
+
+        $material = Material::latest('id')->first();
+
+        $redirectUrl = route('materials.index').'#material-'.$material->id;
 
         $this->assertDatabaseHas('materials', [
             'user_id' => $this->user->id,
+            'id' => $material->id,
             'name' => 'Lavender',
             'botanical' => 'Lavandula Angustifolia',
         ]);
@@ -79,14 +89,14 @@ describe('creating materials', function () {
 
     it('saves pyramid tiers for a material', function () {
         $postUrl = route('materials.store');
-        $indexUrl = route('materials.index');
+        $redirectUrl = route('materials.index').'#material-1';
         $payload = materialPayload([
             'name' => 'Bergamot',
             'pyramid' => ['top'],
         ]);
 
         postAs($this->user, $postUrl, $payload)
-            ->assertRedirect($indexUrl);
+            ->assertRedirect($redirectUrl);
 
         $this->assertDatabaseHas('materials', [
             'name' => 'Bergamot',
@@ -105,7 +115,6 @@ describe('creating materials', function () {
 
     it('creates a material with allowed taxonomy tags and IFRA percent', function () {
         $postUrl = route('materials.store');
-        $indexUrl = route('materials.index');
         $payload = materialPayload([
             'families' => ['citrus'],
             'functions' => ['modifier'],
@@ -114,8 +123,13 @@ describe('creating materials', function () {
             'ifra_max_pct' => 1.0,
         ]);
 
-        postAs($this->user, $postUrl, $payload)
-            ->assertRedirect($indexUrl);
+        $response = postAs($this->user, $postUrl, $payload);
+
+        $material = Material::latest('id')->first();
+
+        $redirectUrl = route('materials.index').'#material-'.$material->id;
+
+        $response->assertRedirect($redirectUrl);
 
         // Checks the database
         $material = Material::where('name', 'Lavender')->first();
@@ -212,7 +226,7 @@ describe('editing materials', function () {
 
         [$response, $crawler] = getPageCrawler($this->user, $editUrl);
 
-        $cancelLink = $crawler->filter("form[action=\"$updateUrl\"] a[href=\"$indexUrl\"]");
+        $cancelLink = $crawler->filter("a[href=\"$indexUrl\"]");
 
         expect($cancelLink->count())->toBe(1);
         expect($cancelLink->text())->toContain('CANCEL');
