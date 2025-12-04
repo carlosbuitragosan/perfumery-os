@@ -308,6 +308,32 @@ describe('Bottle editing', function () {
         expect($form->attr('action'))->toBe($updateUrl, 'Edit form action does not match update route');
         expect($form->attr('method'))->toBe('POST', 'form\'s HTTP method should be POST');
     });
+
+    it('reactives a finished bottle', function () {
+        $bottle = makeBottle($this->material, ['is_active' => false]);
+        $reactivateUrl = route('bottles.reactivate', $bottle);
+        $redirectUrl = route('materials.show', $this->material).'#bottle-'.$bottle->id;
+
+        $response = postAs($this->user, $reactivateUrl)
+            ->assertRedirect($redirectUrl);
+
+        expect($bottle->fresh()->is_active)->toBeTrue();
+    });
+
+    it('shows a reactivate button for finished bottles', function () {
+        $bottle = makeBottle($this->material);
+        $bottlesUrl = route('materials.show', $this->material);
+        $reactivateUrl = route('bottles.reactivate', $bottle);
+
+        postAs($this->user, route('bottles.finish', $bottle));
+
+        [, $crawler] = getPageCrawler($this->user, $bottlesUrl);
+
+        $form = $crawler->filter("form[action=\"{$reactivateUrl}\"]");
+
+        expect($form->count())->toBe(1);
+        expect($form->filter('button')->text())->toContain('REACTIVATE');
+    });
 });
 
 describe('Bottle deletion', function () {

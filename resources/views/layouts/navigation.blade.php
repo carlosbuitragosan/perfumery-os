@@ -37,7 +37,7 @@
                <button
                   type="button"
                   onclick="toggleTheme()"
-                  class="p-1 mr-2 rounded-full bg-gray-100 text-slate-900 border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                  class="p-1 mr-4 rounded-full bg-gray-100 text-slate-900 border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                >
                   <img
                      src="{{ asset('images/sun-icon.svg') }}"
@@ -101,7 +101,7 @@
                <button
                   type="button"
                   onclick="toggleTheme()"
-                  class="p-1 mr-2 rounded-full bg-gray-100 text-slate-900 border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                  class="p-1 mr-4 rounded-full bg-gray-100 text-slate-900 border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                >
                   <img
                      src="{{ asset('images/sun-icon.svg') }}"

@@ -167,4 +167,15 @@ class BottleController extends Controller
             ->with('ok', 'Bottle deleted');
 
     }
+
+    public function reactivate(Bottle $bottle)
+    {
+        if (! $bottle->is_active) {
+            $bottle->is_active = true;
+            $bottle->save();
+        }
+
+        return redirect(route('materials.show', $bottle->material).'#bottle-'.$bottle->id)
+            ->with('ok', 'Bottle reactivated');
+    }
 }

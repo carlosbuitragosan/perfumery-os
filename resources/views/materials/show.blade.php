@@ -165,6 +165,16 @@
                               MARK AS FINISHED
                            </button>
                         </form>
+                     @else
+                        <form method="POST" action="{{ route('bottles.reactivate', $bottle) }}">
+                           @csrf
+                           <button
+                              type="submit"
+                              class="px-2 py-1 text-xs font-semibold underline rounded text-rose-700 hover:text-rose-600 dark:text-rose-300 dark:hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                           >
+                              REACTIVATE
+                           </button>
+                        </form>
                      @endif
                   </div>
 
