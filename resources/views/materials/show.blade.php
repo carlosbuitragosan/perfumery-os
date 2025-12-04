@@ -29,7 +29,7 @@
                $enum = ExtractionMethod::tryFrom((string) $bottle->method);
             @endphp
 
-            <div class="card border p-4 text-sm space-y-1" id="bottle-{{ $bottle->id }}">
+            <div class="card relative border p-4 text-sm space-y-1" id="bottle-{{ $bottle->id }}">
                <div class="flex items-center gap-2 mb-1">
                   @if ($bottle->is_active)
                      <span
@@ -153,49 +153,9 @@
                   </div>
                @endif
 
-               <div class="flex justify-between items-end">
-                  <div>
-                     @if ($bottle->is_active)
-                        <form method="POST" action="{{ route('bottles.finish', $bottle) }}">
-                           @csrf
-                           <button
-                              type="submit"
-                              class="px-2 py-1 text-xs font-semibold underline rounded text-rose-700 hover:text-rose-600 dark:text-rose-300 dark:hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                           >
-                              MARK AS FINISHED
-                           </button>
-                        </form>
-                     @else
-                        <form method="POST" action="{{ route('bottles.reactivate', $bottle) }}">
-                           @csrf
-                           <button
-                              type="submit"
-                              class="px-2 py-1 text-xs font-semibold underline rounded text-rose-700 hover:text-rose-600 dark:text-rose-300 dark:hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                           >
-                              REACTIVATE
-                           </button>
-                        </form>
-                     @endif
-                  </div>
-
-                  <div class="flex gap-2 justify-end">
-                     <form
-                        method="POST"
-                        action="{{ route('bottles.destroy', $bottle) }}"
-                        class="bottle-delete-form"
-                        onsubmit="return confirm('Are you sure you want to delete this bottle?')"
-                     >
-                        @csrf
-                        @method('DELETE')
-                        <x-danger-button type="submit">DELETE</x-danger-button>
-                     </form>
-                     <x-link
-                        href="{{ route('bottles.edit', $bottle) }} "
-                        class="text-sm bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white"
-                     >
-                        EDIT
-                     </x-link>
-                  </div>
+               {{-- Actions dropdown --}}
+               <div class="absolute top-2 right-2">
+                  @include('bottles.partials.actions-dropdown', ['bottle' => $bottle])
                </div>
             </div>
          @empty
