@@ -39,6 +39,11 @@ Route::middleware('auth')
                 Route::post('/reactivate', 'reactivate')->name('bottles.reactivate');
                 Route::delete('/', 'destroy')->name('bottles.destroy');
             });
+
+        // Blends
+        Route::get('/blends/create', function () {
+            return view('blends.create');
+        })->name('blends.create');
     });
 
 Route::post('/demo-login', [DemoLoginController::class, 'store'])

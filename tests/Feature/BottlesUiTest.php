@@ -332,7 +332,7 @@ describe('Bottle editing', function () {
         $form = $crawler->filter("form[action=\"{$reactivateUrl}\"]");
 
         expect($form->count())->toBe(1);
-        expect($form->filter('button')->text())->toContain('REACTIVATE');
+        expect($form->filter('button')->text())->toContain('Reactivate');
     });
 });
 
@@ -346,7 +346,7 @@ describe('Bottle deletion', function () {
         $bottleDiv = $crawler->filter("#bottle-{$bottle->id}");
         $deleteForm = $bottleDiv->filter('form.bottle-delete-form');
 
-        expect($bottleDiv->text())->toContain('DELETE');
+        expect($bottleDiv->text())->toContain('Delete');
         expect($deleteForm->count())->toBe(1);
         expect($deleteForm->attr('action'))->toBe($deleteUrl);
         expect($deleteForm->attr('onsubmit'))->toContain('confirm(');

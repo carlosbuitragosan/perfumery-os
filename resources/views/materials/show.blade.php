@@ -11,15 +11,11 @@
    </x-slot>
 
    <div class="p-4 space-y-4">
-      <a
-         href="{{ route('materials.bottles.create', $material) }}"
-         class="inline-flex items-center px-3 py-2 rounded-md text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-      >
-         ADD
-      </a>
+      <x-link href="{{ route('materials.bottles.create', $material) }}">Add Bottle</x-link>
+
       {{-- Succes update message --}}
       @if (session('ok'))
-         <div class="rounded bg-green-900/50 text-green-200 px-3 py-2">{{ session('ok') }}</div>
+         <x-flash>{{ session('ok') }}</x-flash>
       @endif
 
       {{-- Stock --}}
