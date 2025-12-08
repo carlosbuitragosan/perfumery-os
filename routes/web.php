@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\DemoLoginController;
+use App\Http\Controllers\BlendController;
 use App\Http\Controllers\BottleController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProfileController;
@@ -41,9 +42,8 @@ Route::middleware('auth')
             });
 
         // Blends
-        Route::get('/blends/create', function () {
-            return view('blends.create');
-        })->name('blends.create');
+        Route::get('/blends/create', [BlendController::class, 'create'])
+            ->name('blends.create');
     });
 
 Route::post('/demo-login', [DemoLoginController::class, 'store'])

@@ -13,17 +13,32 @@
    input[type='date'],
    textarea,
    select {
-      @apply rounded-md
-         border bg-white text-slate-900 border-gray-300 placeholder-gray-500 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-400;
+      @apply rounded-md border border-gray-300 bg-white text-slate-900 placeholder-gray-500 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-400;
    }
 
-   /* Focus styles */
+   /* Focus styles – single, consistent ring */
    input:focus,
-   textarea:focus,
-   select:focus {
-      @apply ring-2 ring-indigo-500 border-gray-600 outline-none ring-offset-2 ring-offset-white dark:ring-offset-gray-900;
+   textarea:focus {
+      @apply ring-2 ring-indigo-500 border-gray-600 ring-offset-2 ring-offset-white dark:ring-offset-gray-900;
    }
 
+   select:focus {
+      outline: none !important;
+      box-shadow: none !important;
+      @apply border-indigo-500;
+   }
+
+   /* Hide number input arrows (Chrome, Safari, Edge) */
+   input[type='number']::-webkit-inner-spin-button,
+   input[type='number']::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+   }
+
+   /* Hide number input arrows (Firefox) */
+   input[type='number'] {
+      -moz-appearance: textfield;
+   }
    /* Cards/containers */
    .card {
       @apply rounded-lg border border-gray-200 bg-white text-slate-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100;
