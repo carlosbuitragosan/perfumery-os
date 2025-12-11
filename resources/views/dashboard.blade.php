@@ -5,9 +5,22 @@
       </h2>
    </x-slot>
 
-   <div class="p-6">
+   <div class="p-6 space-y-6">
       <div>
          <x-link href="{{ route('blends.create') }}">Create Blend</x-link>
       </div>
+
+      @if ($blends->isNotEmpty())
+         <div class="space-y-3">
+            @foreach ($blends as $blend)
+               <a
+                  href="{{ route('blends.show', $blend) }}"
+                  class="card card-hover card-focus block px-4 py-3 rounded-md text-sm font-semibold"
+               >
+                  {{ $blend->name }}
+               </a>
+            @endforeach
+         </div>
+      @endif
    </div>
 </x-app-layout>

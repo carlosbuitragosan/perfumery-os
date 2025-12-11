@@ -4,7 +4,12 @@
    </x-slot>
 
    <div class="p-4">
-      <form id="create-blend-form" method="POST" action="#" class="space-y-3">
+      <form
+         id="create-blend-form"
+         method="POST"
+         action="{{ route('blends.store') }}"
+         class="space-y-3"
+      >
          @csrf
          <label class="block">
             <span class="text-sm">Blend Name</span>

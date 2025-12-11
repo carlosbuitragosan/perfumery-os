@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\DemoLoginController;
 use App\Http\Controllers\BlendController;
 use App\Http\Controllers\BottleController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -13,7 +14,8 @@ Route::redirect('/', '/dashboard');
 Route::middleware('auth')
     ->group(function () {
         // Dashboard
-        Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
         // Profile
         Route::controller(ProfileController::class)->group(function () {
@@ -42,8 +44,9 @@ Route::middleware('auth')
             });
 
         // Blends
-        Route::get('/blends/create', [BlendController::class, 'create'])
-            ->name('blends.create');
+        Route::resource('blends', BlendController::class)
+            ->only(['create', 'store', 'show']);
+
     });
 
 Route::post('/demo-login', [DemoLoginController::class, 'store'])
