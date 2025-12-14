@@ -35,10 +35,24 @@ it('shows the create blend form', function () {
 });
 
 it('creates a blend and redirects to its page', function () {
+    $lavender = makeMaterial();
+    $galbanum = makeMaterial(['name' => 'Galbanum']);
     $postUrl = route('blends.store');
 
     $response = postAs($this->user, $postUrl, [
         'name' => 'Sunshine',
+        'materials' => [
+            [
+                'material_id' => $lavender->id,
+                'drops' => 1,
+                'dilution' => 25,
+            ],
+            [
+                'material_id' => $galbanum->id,
+                'drops' => 1,
+                'dilution' => 1,
+            ],
+        ],
     ]);
 
     $this->assertDatabaseHas('blends', [
@@ -67,4 +81,55 @@ it('shows existing blend on the dashboard', function () {
 
     expect($link->count())->toBe(1);
     expect($link->text())->toContain('Sunshine');
+});
+
+it('shows blend version with ingredients and pure % breakdown', function () {
+    $lavender = makeMaterial();
+    $galbanum = makeMaterial(['name' => 'Galbanum']);
+    $postUrl = route('blends.store');
+
+    $response = postAs($this->user, $postUrl, [
+        'name' => 'Sunshine',
+        'materials' => [
+            [
+                'material_id' => $lavender->id,
+                'drops' => 1,
+                'dilution' => 25,
+            ],
+            [
+                'material_id' => $galbanum->id,
+                'drops' => 1,
+                'dilution' => 1,
+            ],
+        ],
+    ]);
+
+    $blend = Blend::where('user_id', $this->user->id)
+        ->where('name', 'Sunshine')
+        ->firstOrFail();
+
+    $redirectUrl = route('blends.show', $blend);
+
+    $response->assertRedirect($redirectUrl);
+
+    [, $crawler] = getPageCrawler($this->user, $redirectUrl);
+
+    expect($crawler->filter('header')->text())->toContain($blend->name);
+
+    $version = $crawler->filter('div[data-testid="blend-version"][data-version="1.0"]');
+    expect($version->count())->toBe(1);
+
+    $lavenderRow = $crawler->filter('tr[data-testid="blend-ingredient-row"][data-material-id="'.$lavender->id.'"]');
+    expect($lavenderRow->count())->toBe(1);
+    expect($lavenderRow->filter('[data-col="material"]')->text())->toBe($lavender->name);
+    expect($lavenderRow->filter('[data-col="drops"]')->text())->toBe('1');
+    expect($lavenderRow->filter('[data-col="dilution"]')->text())->toBe('25%');
+    expect($lavenderRow->filter('[data-col="pure_pct"]')->text())->toBe('96.15%');
+
+    $galbanumRow = $crawler->filter('tr[data-testid="blend-ingredient-row"][data-material-id="'.$galbanum->id.'"]');
+    expect($galbanumRow->count())->toBe(1);
+    expect($galbanumRow->filter('[data-col="material"]')->text())->toBe($galbanum->name);
+    expect($galbanumRow->filter('[data-col="drops"]')->text())->toBe('1');
+    expect($galbanumRow->filter('[data-col="dilution"]')->text())->toBe('1%');
+    expect($galbanumRow->filter('[data-col="pure_pct"]')->text())->toBe('3.85%');
 });

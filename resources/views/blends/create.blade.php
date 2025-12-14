@@ -17,28 +17,59 @@
          </label>
 
          <h3 class="font-medium">Ingredients</h3>
-         <div class="flex flex-col gap-3">
-            {{-- MATERIAL --}}
-            <select name="materials[0][material_id]" class="w-full p-2">
-               <option value="">Select material</option>
-               @foreach ($materials as $material)
-                  <option value="{{ $material->id }}">{{ $material->name }}</option>
-               @endforeach
-            </select>
-            {{-- DROPS --}}
-            <input
-               type="number"
-               name="materials[0][drops]"
-               placeholder="number of drops"
-               class="w-full p-2"
-            />
-            {{-- DILUTION --}}
-            <select name="materials[0][dilution]" class="w-full p-2">
-               <option value="25">25%</option>
-               <option value="10">10%</option>
-               <option value="1">1%</option>
-            </select>
+         {{-- INGREDIENTS --}}
+         <div class="space-y-6">
+            <div class="flex flex-col gap-3">
+               {{-- MATERIAL --}}
+               <select name="materials[0][material_id]" class="w-full p-2">
+                  <option value="">Select material</option>
+                  @foreach ($materials as $material)
+                     <option value="{{ $material->id }}">{{ $material->name }}</option>
+                  @endforeach
+               </select>
+               <div class="flex gap-4">
+                  {{-- DROPS --}}
+                  <input
+                     type="number"
+                     name="materials[0][drops]"
+                     placeholder="number of drops"
+                     class="w-full p-2"
+                  />
+                  {{-- DILUTION --}}
+                  <select name="materials[0][dilution]" class="w-full p-2">
+                     <option value="25">25%</option>
+                     <option value="10">10%</option>
+                     <option value="1">1%</option>
+                  </select>
+               </div>
+            </div>
+
+            <div class="flex flex-col gap-3">
+               {{-- MATERIAL --}}
+               <select name="materials[1][material_id]" class="w-full p-2">
+                  <option value="">Select material</option>
+                  @foreach ($materials as $material)
+                     <option value="{{ $material->id }}">{{ $material->name }}</option>
+                  @endforeach
+               </select>
+               <div class="flex gap-4">
+                  {{-- DROPS --}}
+                  <input
+                     type="number"
+                     name="materials[1][drops]"
+                     placeholder="number of drops"
+                     class="w-full p-2"
+                  />
+                  {{-- DILUTION --}}
+                  <select name="materials[1][dilution]" class="w-full p-2">
+                     <option value="25">25%</option>
+                     <option value="10">10%</option>
+                     <option value="1">1%</option>
+                  </select>
+               </div>
+            </div>
          </div>
+
          <div class="flex gap-2">
             <x-primary-button type="submit" class="bg-green-600 hover:bg-green-700">
                SAVE

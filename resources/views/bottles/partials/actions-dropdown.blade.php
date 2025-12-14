@@ -9,7 +9,7 @@
       </button>
    </x-slot>
    <x-slot name="content">
-      <x-dropdown-link :href="route('bottles.edit', $bottle)">EDIT</x-dropdown-link>
+      <x-dropdown-link :href="route('bottles.edit', $bottle)">Edit</x-dropdown-link>
 
       @if ($bottle->is_active)
          <form method="POST" action="{{ route('bottles.finish', $bottle) }}">
