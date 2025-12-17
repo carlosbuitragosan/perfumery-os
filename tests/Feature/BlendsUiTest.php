@@ -133,3 +133,25 @@ it('shows blend version with ingredients and pure % breakdown', function () {
     expect($galbanumRow->filter('[data-col="dilution"]')->text())->toBe('1%');
     expect($galbanumRow->filter('[data-col="pure_pct"]')->text())->toBe('3.85%');
 });
+
+test('create form shows only one ingredient row initially and provides hooks to add more', function () {
+    [, $crawler] = getPageCrawler($this->user, route('blends.create'));
+
+    expect($crawler->filter('[data-testid="ingredient-row"]')->count())->toBe(1);
+    expect($crawler->filter('select[name="materials[0][material_id]"]')->count())->toBe(1);
+    expect($crawler->filter('input[name="materials[0][drops]"]')->count())->toBe(1);
+    expect($crawler->filter('select[name="materials[0][dilution]"]')->count())->toBe(1);
+    expect($crawler->filter('[data-testid="add-ingredient"]')->count())->toBe(1);
+    expect($crawler->filter('template[data-testid="ingredient-template"]')->count())->toBe(1);
+});
+
+test('user can add a second ingredient row', function () {
+    [, $crawler] = getPageCrawler($this->user, route('blends.create'));
+
+    $addButton = $crawler->filter('[data-testid="add-ingredient"]');
+    expect($addButton->count())->toBe(1);
+
+    $template = $crawler->filter('template[data-testid="ingredient-template"]');
+    expect($template->count())->toBe(1);
+    expect($template->html())->toContain('__INDEX__');
+});

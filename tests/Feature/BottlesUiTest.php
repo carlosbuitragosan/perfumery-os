@@ -201,7 +201,7 @@ describe('Bottle editing', function () {
 
         [, $crawler] = getPageCrawler($this->user, $showUrl);
 
-        $link = $crawler->filter('a:contains("EDIT")')
+        $link = $crawler->filter('a:contains("Edit")')
             ->reduce(function ($node) use ($editUrl) {
                 return $node->attr('href') === $editUrl;
             });
