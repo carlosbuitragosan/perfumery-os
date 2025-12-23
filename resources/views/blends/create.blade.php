@@ -13,36 +13,59 @@
          @csrf
          <label class="block">
             <span class="text-sm">Blend Name</span>
-            <input type="text" name="name" class="p-2 w-full" />
+            <input type="text" name="name" value="{{ old('name') }}" class="p-2 w-full" />
          </label>
 
          <h3 class="font-medium">Ingredients</h3>
+
+         @error('materials')
+            <x-flash type="error">{{ $message }}</x-flash>
+         @enderror
+
+         @php
+            $oldMaterials = old('materials');
+            $rows = is_array($oldMaterials) && count($oldMaterials) ? $oldMaterials : [['material_id' => '', 'drops' => '', 'dilution' => 25]];
+         @endphp
+
          {{-- INGREDIENTS --}}
          <div class="space-y-6" data-testid="ingredients-container">
-            <div class="flex flex-col gap-3" data-testid="ingredient-row" data-index="0">
-               {{-- MATERIAL --}}
-               <select name="materials[0][material_id]" class="w-full p-2">
-                  <option value="">Select material</option>
-                  @foreach ($materials as $material)
-                     <option value="{{ $material->id }}">{{ $material->name }}</option>
-                  @endforeach
-               </select>
-               <div class="flex gap-4">
-                  {{-- DROPS --}}
-                  <input
-                     type="number"
-                     name="materials[0][drops]"
-                     placeholder="number of drops"
-                     class="w-full p-2"
-                  />
-                  {{-- DILUTION --}}
-                  <select name="materials[0][dilution]" class="w-full p-2">
-                     <option value="25">25%</option>
-                     <option value="10">10%</option>
-                     <option value="1">1%</option>
+            @foreach ($rows as $i => $row)
+               <div class="flex flex-col gap-3" data-testid="ingredient-row" data-index="{{ $i }}">
+                  {{-- MATERIAL --}}
+                  <select name="materials[{{ $i }}][material_id]" class="w-full p-2">
+                     <option value="">Select material</option>
+                     @foreach ($materials as $material)
+                        <option
+                           value="{{ $material->id }}"
+                           @selected((string) ($row['material_id'] ?? '') === (string) $material->id)
+                        >
+                           {{ $material->name }}
+                        </option>
+                     @endforeach
                   </select>
+                  <div class="flex gap-4">
+                     {{-- DROPS --}}
+                     <input
+                        type="number"
+                        name="materials[{{ $i }}][drops]"
+                        placeholder="number of drops"
+                        class="w-full p-2"
+                        value="{{ $row['drops'] ?? '' }}"
+                     />
+                     {{-- DILUTION --}}
+                     <select name="materials[{{ $i }}][dilution]" class="w-full p-2">
+                        @foreach ([25, 10, 1] as $d)
+                           <option
+                              value="{{ $d }}"
+                              @selected((int) ($row['dilution'] ?? 25) === $d)
+                           >
+                              {{ $d }}
+                           </option>
+                        @endforeach
+                     </select>
+                  </div>
                </div>
-            </div>
+            @endforeach
          </div>
 
          <x-primary-button type="button" data-testid="add-ingredient" class="bg-indigo-600">
@@ -53,7 +76,7 @@
          <template data-testid="ingredient-template">
             <div
                class="flex flex-col gap-3"
-               data-testid="ingredient-template"
+               data-testid="ingredient-template-row"
                data-index="__INDEX__"
             >
                {{-- MATERIAL --}}

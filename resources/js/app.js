@@ -13,12 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
    }
 
-   let index = 1;
+   const existingRows = container.querySelectorAll('[data-testid="ingredient-row"]');
+   let index = existingRows.length;
 
    addButton.addEventListener('click', () => {
       const html = template.innerHTML.replaceAll('__INDEX__', index);
       container.insertAdjacentHTML('beforeend', html);
 
+      const lastContainer = container.lastElementChild;
+      if (lastContainer?.dataset?.testid === 'ingredient-template-row') {
+         lastContainer.dataset.testid = 'ingredient-row';
+      }
       index++;
    });
 });

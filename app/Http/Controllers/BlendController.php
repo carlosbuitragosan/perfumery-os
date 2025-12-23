@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Blend;
 use App\Models\Material;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class BlendController extends Controller
 {
@@ -19,12 +20,27 @@ class BlendController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
+            'materials' => ['required', 'array', 'min:1'],
             'materials.*.material_id' => ['required', 'integer', 'exists:materials,id'],
             'materials.*.drops' => ['required', 'integer', 'min:1', 'max:999'],
             'materials.*.dilution' => ['required', 'integer', 'in:25,10,1'],
         ]);
+
+        $validator->after(function ($validator) {
+            $materials = $validator->getData()['materials'] ?? [];
+
+            $ids = collect($materials)
+                ->pluck('material_id')
+                ->filter();
+
+            if ($ids->count() !== $ids->unique()->count()) {
+                $validator->errors()->add('materials', 'You can\'t use the same material twice.');
+            }
+        });
+
+        $data = $validator->validate();
 
         $blend = Blend::create([
             'user_id' => auth()->id(),

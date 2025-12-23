@@ -155,3 +155,21 @@ test('user can add a second ingredient row', function () {
     expect($template->count())->toBe(1);
     expect($template->html())->toContain('__INDEX__');
 });
+
+it('rejects duplicate materials in the same blend submission', function () {
+    $material = makeMaterial();
+    $postUrl = route('blends.store');
+    $blend = [
+        'name' => 'Sunshine',
+        'materials' => [
+            ['material_id' => $material->id, 'drops', 1, 'dilution' => 25],
+            ['material_id' => $material->id, 'drops', 2, 'dilution' => 25],
+        ],
+    ];
+
+    $response = postAs($this->user, $postUrl, $blend);
+
+    $response->assertSessionHasErrors(['materials']);
+    $this->assertDatabaseCount('blend_version_ingredients', 0);
+
+});
