@@ -10,7 +10,6 @@ class BlendVersion extends Model
     use HasFactory;
 
     protected $fillable = [
-        'blend_id',
         'version',
     ];
 
