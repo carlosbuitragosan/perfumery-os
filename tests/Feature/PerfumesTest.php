@@ -386,3 +386,27 @@ test('header in show page contains a link to the blend that created the perfume'
     expect($link->attr('href'))->toBe($blendLink);
     expect($link->text())->toBe("Blend: {$this->blend->name}, Version {$this->blendVersion->version}");
 });
+
+test('Perfume index page shows list ordered by lat updated', function () {
+    // Create 2 perfumes
+    $perfume1 = $this->blendVersion->perfumes()->create([
+        'name' => 'Perfume 1',
+    ]);
+    $perfume2 = $this->blendVersion->perfumes()->create([
+        'name' => 'Perfume 2',
+    ]);
+
+    // Assert 1st perfume created shows first
+    [, $crawler] = getPageCrawler($this->user, route('perfumes.index'));
+    $perfume1Container = $crawler->filter('[data-testid="perfume-card"]')->first();
+    expect($perfume1Container->text())->toContain('Perfume 1');
+
+    // Update 2nd perfume
+    $this->travel(1)->seconds();
+    $perfume2->touch();
+
+    // Assert 2nd perfume shows first
+    [, $crawler] = getPageCrawler($this->user, route('perfumes.index'));
+    $perfume2Container = $crawler->filter('[data-testid="perfume-card"]')->first();
+    expect($perfume2Container->text())->toContain('Perfume 2');
+});

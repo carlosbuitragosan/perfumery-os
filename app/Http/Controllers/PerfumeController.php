@@ -14,7 +14,9 @@ class PerfumeController extends Controller
     {
         $perfumes = Perfume::whereHas('blendVersion.blend', function ($query) {
             $query->where('user_id', auth()->id());
-        })->get();
+        })
+            ->latest('updated_at')
+            ->get();
 
         return view('perfumes.index', compact('perfumes'));
     }
