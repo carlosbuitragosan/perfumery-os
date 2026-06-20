@@ -11,7 +11,6 @@ class Blend extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'name',
     ];
 
@@ -27,10 +26,12 @@ class Blend extends Model
 
     public static function createBlendWithIngredients(array $data, int $userId)
     {
-        $blend = self::create([
-            'user_id' => $userId,
+        $blend = new self([
             'name' => trim($data['name']),
         ]);
+
+        $blend->user_id = $userId;
+        $blend->save();
 
         $blendVersion = $blend->versions()->create([
             'version' => $blend->nextVersionNumber(),
