@@ -10,7 +10,6 @@ class BlendIngredient extends Model
     use HasFactory;
 
     protected $fillable = [
-        'blend_version_id',
         'material_id',
         'bottle_id',
         'drops',
