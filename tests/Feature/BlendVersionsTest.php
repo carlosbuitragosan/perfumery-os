@@ -264,6 +264,31 @@ test('shows updated version ingredients on the blend show page', function () {
     expect($neroli->filter('td[data-col="dilution"]')->text())->toBe('1%');
 });
 
+test('Blend show page lists versions in numerical order', function () {
+    // Create 12 versions for a blend
+    [$blend, $version] = makeBlendWithVersion($this->user, 'Test Blend');
+
+    foreach (range(2, 12) as $i) {
+        $this->travel(1)->seconds();
+
+        $blend->versions()->create([
+            'version' => $blend->nextVersionNumber(),
+        ]);
+    }
+
+    // Get HTML for blend show page
+    [, $crawler] = getPageCrawler($this->user, route('blends.show', $blend));
+
+    // get all versions
+    $versions = $crawler
+        ->filter('div[data-testid="blend-version"]')
+        ->each(fn ($node) => (int) $node->attr('data-version'));
+
+    expect($versions)->toBe([
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ]);
+});
+
 test('Editing a blend version does not auto assign bottle ids when materials has more than one bottle available', function () {
     // Create materials and 2 bottles for lavender
     $lavender = makeMaterial();
